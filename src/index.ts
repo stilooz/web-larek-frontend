@@ -2,6 +2,7 @@ import './scss/styles.scss';
 import { LarekApi } from './components/base/api-larek';
 import { API_URL } from './utils/constants';
 import { Product } from './types';
+import { cloneTemplate } from './utils/utils';
 /*
 создать интерфейсы?
 
@@ -18,5 +19,25 @@ import { Product } from './types';
 
 const api = new LarekApi(API_URL);
 api.getProductList().then((data) => {
-	console.log('Список товаров:', data.items);
+	renderCatalog(data.items);
 });
+
+function renderProductCard(product: Product): HTMLElement {
+	const card = cloneTemplate<HTMLButtonElement>('#card-catalog');
+
+	card.querySelector('.card__title')!.textContent = product.title;
+	card.querySelector('.card__price')!.textContent = `${product.price} синапсов`;
+	carf.querySelector('.card__category')!.textContent = product.category;
+	(card.querySelector('.card__image') as HTMLImageElement).src = product.image;
+
+	return card;
+}
+
+function renderCatalog(products: Product[]) {
+	const container = document.querySelector('.gallery')!;
+	container.innerHTML = '';
+	products.forEach((product) => {
+		const card = renderProductCard(product);
+		container.append(card);
+	});
+}
