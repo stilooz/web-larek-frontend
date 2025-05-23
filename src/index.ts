@@ -25,16 +25,28 @@ api.getProductList().then((data) => {
 function renderProductCard(product: Product): HTMLElement {
 	const card = cloneTemplate<HTMLButtonElement>('#card-catalog');
 
-	card.querySelector('.card__title')!.textContent = product.title;
-	card.querySelector('.card__price')!.textContent = `${product.price} синапсов`;
-	carf.querySelector('.card__category')!.textContent = product.category;
-	(card.querySelector('.card__image') as HTMLImageElement).src = product.image;
+	const titleElement = card.querySelector('.card__title');
+	if (titleElement) titleElement.textContent = product.title;
+
+	const priceElement = card.querySelector('.card__price');
+	if (priceElement) priceElement.textContent = `${product.price} синапсов`;
+
+	const categoryElement = card.querySelector('.card__category');
+	if (categoryElement) categoryElement.textContent = product.category;
+
+	const imageElement = card.querySelector(
+		'.card__image'
+	) as HTMLImageElement | null;
+	if (imageElement) imageElement.src = product.image;
 
 	return card;
 }
 
 function renderCatalog(products: Product[]) {
-	const container = document.querySelector('.gallery')!;
+	const container = document.querySelector('.gallery');
+	if (!container) {
+		throw new Error('Элемент .gallery не найден');
+	}
 	container.innerHTML = '';
 	products.forEach((product) => {
 		const card = renderProductCard(product);
