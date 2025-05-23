@@ -1,5 +1,5 @@
 import './scss/styles.scss';
-import { LarekApi } from './components/api-larek';
+import { LarekApi } from './components/base/api-larek';
 import { API_URL } from './utils/constants';
 import { Product } from './types';
 /*

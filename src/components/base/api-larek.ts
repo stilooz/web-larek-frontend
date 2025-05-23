@@ -1,5 +1,5 @@
-import { Api, ApiListResponse } from './base/api';
-import { Product } from '../types';
+import { Api, ApiListResponse } from './api';
+import { Product } from '../../types';
 
 export class LarekApi extends Api {
 	getProductList(): Promise<ApiListResponse<Product>> {
