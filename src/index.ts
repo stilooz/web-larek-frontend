@@ -131,4 +131,22 @@ function renderCartModal() {
 			modalContainer.classList.add('modal_active');
 		}
 	}
+	const orderButton = modal.querySelector('.basket__button');
+	orderButton?.addEventListener('click', () => {
+		renderOrderForm();
+	});
+}
+
+function renderOrderForm() {
+	const modal = cloneTemplate<HTMLFormElement>('#order');
+
+	const modalContainer = document.getElementById('modal-container');
+	if (modalContainer) {
+		const modalContent = modalContainer.querySelector('.modal__content');
+		if (modalContent) {
+			modalContent.innerHTML = '';
+			modalContent.append(modal);
+			modalContainer.classList.add('modal_active');
+		}
+	}
 }
