@@ -3,6 +3,7 @@ import { LarekApi } from './components/base/api-larek';
 import { API_URL } from './utils/constants';
 import { Product } from './types';
 import { cloneTemplate } from './utils/utils';
+import { EventEmitter } from './components/base/events';
 /*
 создать интерфейсы?
 
@@ -22,6 +23,8 @@ api.getProductList().then((data) => {
 	renderCatalog(data.items);
 });
 
+const events = new EventEmitter();
+
 function renderProductCard(product: Product): HTMLElement {
 	const card = cloneTemplate<HTMLButtonElement>('#card-catalog');
 
@@ -39,6 +42,10 @@ function renderProductCard(product: Product): HTMLElement {
 	) as HTMLImageElement | null;
 	if (imageElement) imageElement.src = product.image;
 
+	card.addEventListener('click', () => {
+		events.emit('catalog: productSelected', { product });
+	});
+
 	return card;
 }
 
@@ -53,3 +60,31 @@ function renderCatalog(products: Product[]) {
 		container.append(card);
 	});
 }
+
+events.on('catalog: productSelected', ({ product }) => {
+	const modal = cloneTemplate<HTMLDivElement>('#card-preview');
+
+	const imageElement = modal.querySelector('.card__image') as HTMLImageElement;
+	if (imageElement) imageElement.src = product.image;
+
+	const categoryElement = modal.querySelector('.card__category');
+	if (categoryElement) categoryElement.textContent = product.category;
+
+	const titleElement = modal.querySelector('.card__title');
+	if (titleElement) titleElement.textContent = product.title;
+
+	const descriptionElement = modal.querySelector('.card__text');
+	if (descriptionElement) descriptionElement.textContent = product.description;
+
+	const priceElement = modal.querySelector('.card__price');
+	if (priceElement) priceElement.textContent = `${product.price} синапсов`;
+
+	// вставка в модалку
+	const modalContent = document.querySelector('.modal__content');
+	const modalContainer = document.querySelector('.modal');
+	if (modalContent && modalContainer) {
+		modalContent.innerHTML = '';
+		modalContent.append(modal);
+		modalContainer.classList.add('modal_active');
+	}
+});
