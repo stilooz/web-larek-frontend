@@ -61,7 +61,7 @@ function renderCatalog(products: Product[]) {
 	});
 }
 
-events.on('catalog: productSelected', ({ product }) => {
+events.on<{ product: Product }>('catalog: productSelected', ({ product }) => {
 	const modal = cloneTemplate<HTMLDivElement>('#card-preview');
 
 	const imageElement = modal.querySelector('.card__image') as HTMLImageElement;
@@ -79,12 +79,21 @@ events.on('catalog: productSelected', ({ product }) => {
 	const priceElement = modal.querySelector('.card__price');
 	if (priceElement) priceElement.textContent = `${product.price} синапсов`;
 
-	// вставка в модалку
-	const modalContent = document.querySelector('.modal__content');
-	const modalContainer = document.querySelector('.modal');
-	if (modalContent && modalContainer) {
-		modalContent.innerHTML = '';
-		modalContent.append(modal);
-		modalContainer.classList.add('modal_active');
+	const modalContainer = document.getElementById('modal-container');
+	if (modalContainer) {
+		const modalContent = modalContainer.querySelector('.modal__content');
+		if (modalContent) {
+			modalContent.innerHTML = '';
+			modalContent.append(modal);
+			modalContainer.classList.add('modal_active');
+		}
+		const closeButton = modalContainer.querySelector('.modal__close');
+		closeButton?.addEventListener('click', () => {
+			modalContainer.classList.remove('modal_active');
+		});
+		const addToCartButton = modal.querySelector('.card__button');
+		addToCartButton?.addEventListener('click', () => {
+			events.emit<{ product: Product }>('cart: add', { product });
+		});
 	}
 });
