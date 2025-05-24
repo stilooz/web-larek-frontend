@@ -147,6 +147,117 @@ function renderOrderForm() {
 			modalContent.innerHTML = '';
 			modalContent.append(modal);
 			modalContainer.classList.add('modal_active');
+			initOrderForm(modal);
 		}
 	}
+}
+
+function initOrderForm(modal: HTMLFormElement) {
+	let payment: 'card' | 'cash' | null = null;
+
+	const cardBtn = modal.querySelector('button[name="card"]');
+	const cashBtn = modal.querySelector('button[name="cash"]');
+	const addressInput = modal.querySelector<HTMLInputElement>(
+		'input[name="address"]'
+	);
+	const nextButton = modal.querySelector<HTMLButtonElement>('.order__button');
+
+	function validate() {
+		const isValid = payment && addressInput?.value.trim();
+		if (nextButton) nextButton.disabled = !isValid;
+	}
+
+	cardBtn?.addEventListener('click', () => {
+		payment = 'card';
+		cardBtn.classList.add('button_alt-active');
+		cashBtn?.classList.remove('button_alt-active');
+		validate();
+	});
+
+	cashBtn?.addEventListener('click', () => {
+		payment = 'cash';
+		cashBtn.classList.add('button_alt-active');
+		cardBtn?.classList.remove('button_alt-active');
+		validate();
+	});
+
+	addressInput?.addEventListener('input', validate);
+
+	modal.addEventListener('submit', (e) => {
+		e.preventDefault();
+		if (!payment || !addressInput?.value.trim()) return;
+
+		events.emit('order:submit', {
+			payment,
+			address: addressInput.value.trim(),
+		});
+
+		renderContactsForm();
+	});
+}
+
+function renderContactsForm() {
+	const modal = cloneTemplate<HTMLFormElement>('#contacts');
+
+	const modalContainer = document.getElementById('modal-container');
+	if (modalContainer) {
+		const modalContent = modalContainer.querySelector('.modal__content');
+		if (modalContent) {
+			modalContent.innerHTML = '';
+			modalContent.append(modal);
+			modalContainer.classList.add('modal_active');
+			initContactsForm(modal);
+		}
+	}
+}
+
+function initContactsForm(modal: HTMLFormElement) {
+	const emailInput = modal.querySelector<HTMLInputElement>(
+		'input[name="email"]'
+	);
+	const phoneInput = modal.querySelector<HTMLInputElement>(
+		'input[name="phone"]'
+	);
+	const submitButton = modal.querySelector<HTMLButtonElement>(
+		'button[type="submit"]'
+	);
+
+	function validate() {
+		const isValid = emailInput?.value.trim() && phoneInput?.value.trim();
+		if (submitButton) submitButton.disabled = !isValid;
+	}
+
+	emailInput?.addEventListener('input', validate);
+	phoneInput?.addEventListener('input', validate);
+
+	modal.addEventListener('submit', (e) => {
+		e.preventDefault();
+		if (!emailInput?.value || !phoneInput?.value) return;
+
+		events.emit('order:submit', {
+			email: emailInput.value.trim(),
+			phone: phoneInput.value.trim(),
+		});
+
+		renderSuccessModal();
+	});
+}
+
+function renderSuccessModal() {
+	const modal = cloneTemplate<HTMLDivElement>('#success');
+
+	const modalContainer = document.getElementById('modal-container');
+	if (modalContainer) {
+		const modalContent = modalContainer.querySelector('.modal__content');
+		if (modalContent) {
+			modalContent.innerHTML = '';
+			modalContent.append(modal);
+			modalContainer.classList.add('modal_active');
+		}
+	}
+
+	const closeBtn = modal.querySelector('.order-success__close');
+	closeBtn?.addEventListener('click', () => {
+		modalContainer?.classList.remove('modal_active');
+	});
 }
