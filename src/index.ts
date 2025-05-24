@@ -4,19 +4,7 @@ import { API_URL } from './utils/constants';
 import { Product } from './types';
 import { cloneTemplate } from './utils/utils';
 import { EventEmitter } from './components/base/events';
-/*
-создать интерфейсы?
-
-как создать интерфейсы?
-
-какие интерфейсы создать?
-
-нужен апи интерфейс для получения данных с сервера, что-то уже есть в .env. разобраться с этим, для чего он нужен и как им пользоваться. получение списка товаров
-
-создать интерфейс для товаров в котором будет отображаться: товар, модальное окно с кнопками купить и закрыть, внутри еще модалка с кнопкой "в корзину", "закрыть", кнопка + и кнопка - для увеличения и уменьшения колва товаров
-
-сделать интерфейс с модалкой корзины: закрыть, удалить, единица товара, список товара, оформить, сумма покупки. внутри еще модалка в "оформить": закрыть, нлайн или при получении оплата, адрес доставки, далее. внутри еще модалка с потчой и телефоном, кнопка оплатить. модалка с подтверждением успешной операции и кнопка с возвращением к списку товаров.
-*/
+import { CartItem } from './types';
 
 const api = new LarekApi(API_URL);
 api.getProductList().then((data) => {
@@ -24,6 +12,8 @@ api.getProductList().then((data) => {
 });
 
 const events = new EventEmitter();
+
+const cart: CartItem[] = [];
 
 function renderProductCard(product: Product): HTMLElement {
 	const card = cloneTemplate<HTMLButtonElement>('#card-catalog');
@@ -97,3 +87,48 @@ events.on<{ product: Product }>('catalog: productSelected', ({ product }) => {
 		});
 	}
 });
+
+events.on<{ product: Product }>('cart: add', ({ product }) => {
+	const existingItem = cart.find((item) => item.product.id === product.id);
+	if (existingItem) {
+		existingItem.quantity += 1;
+	} else {
+		cart.push({ product, quantity: 1 });
+	}
+
+	renderCartModal();
+});
+
+function renderCartModal() {
+	const modal = cloneTemplate<HTMLDivElement>('#basket');
+	const list = modal.querySelector('.basket__list')!;
+	const total = modal.querySelector('.basket__price')!;
+
+	list.innerHTML = '';
+	let sum = 0;
+
+	cart.forEach((item, index) => {
+		const basketItem = cloneTemplate<HTMLLIElement>('#card-basket');
+		basketItem.querySelector('.basket__item-index')!.textContent = String(
+			index + 1
+		);
+		basketItem.querySelector('.card__title')!.textContent = item.product.title;
+		basketItem.querySelector(
+			'.card__price'
+		)!.textContent = `${item.product.price} * ${item.quantity} синапсов`;
+
+		list.append(basketItem);
+		sum += item.product.price * item.quantity;
+	});
+	total.textContent = `${sum} синапсов`;
+
+	const modalContainer = document.getElementById('modal-container');
+	if (modalContainer) {
+		const modalContent = modalContainer.querySelector('.modal__content');
+		if (modalContent) {
+			modalContent.innerHTML = '';
+			modalContent.append(modal);
+			modalContainer.classList.add('modal_active');
+		}
+	}
+}
