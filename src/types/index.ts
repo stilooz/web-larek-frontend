@@ -4,12 +4,11 @@ export interface Product {
 	description: string;
 	image: string;
 	category: string;
-	price: number;
+	price: number | null;
 }
 
 export interface CartItem {
 	product: Product;
-	quantity: number;
 }
 
 export interface OrderFormData {
