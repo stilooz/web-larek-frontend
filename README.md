@@ -42,17 +42,6 @@ yarn
 yarn start
 ```
 
-## Возможности
-
-- Каталог товаров с загрузкой через API
-- Предпросмотр карточки товара
-- Добавление в корзину
-- Оформление заказа с выбором оплаты и указанием адреса
-- Валидация форм (адрес, email, телефон)
-- Модульная архитектура (MVP + EventEmitter)
-- Шаблонизация интерфейса через HTMLTemplateElement
-- Webpack-сборка, .env-конфигурация
-
 ## Сборка проекта
 
 ```bash
@@ -140,13 +129,19 @@ events.emit('cart: add', { product });
 
 ---
 
-### Api и LarekApi
+### Api
 
-Классы для работы с API:
+Базовый класс для работы с HTTP-запросами:
 
-- `get(uri)` — получить данные
-- `post(uri, data)` — отправка заказа
-- `getProductList()` — получить список товаров
+- `get(uri: string): Promise<any>` — выполнить GET-запрос по заданному пути;
+- `post(uri: string, data: unknown): Promise<any>` — выполнить POST-запрос с телом запроса.
+
+### LarekApi
+
+Наследует `Api` и расширяет его методами для взаимодействия с API магазина:
+
+- `getProductList(): Promise<{ items: Product[] }>` — получить список товаров;
+- `order(data: OrderFormData & ContactFormData): Promise<{ id: string }>` — отправить заказ.
 
 ---
 
