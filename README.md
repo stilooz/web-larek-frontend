@@ -152,3 +152,200 @@ events.emit('cart: add', { product });
 ```ts
 const card = cloneTemplate<HTMLDivElement>('#card-catalog');
 ```
+
+---
+
+## Классы и интерфейсы (в соответствии с MVP)
+
+### Model
+
+```ts
+interface Product {
+	id: string;
+	title: string;
+	description: string;
+	price: number;
+	imageUrl: string;
+}
+
+interface CartItem {
+	product: Product;
+	quantity: number;
+}
+
+interface OrderFormData {
+	paymentMethod: string;
+	address: string;
+}
+
+interface ContactFormData {
+	email: string;
+	phone: string;
+}
+```
+
+### View
+
+- Отвечает за отображение карточек товаров, модальных окон и форм.
+- Использует шаблоны HTMLTemplateElement для рендеринга UI.
+
+### Presenter
+
+- Обрабатывает пользовательские события.
+- Связывает Model и View.
+- Управляет логикой приложения.
+
+### EventEmitter
+
+- Управляет событиями между слоями.
+- Обеспечивает подписку, отписку и передачу данных через события.
+
+---
+
+(Типы и архитектура вынесены из `src/types/index.ts` для удобства документации и понимания.)
+
+---
+
+## Детализация архитектуры
+
+### Классы представлений (View)
+
+#### `Component<T>`
+
+Базовый абстрактный класс для UI-компонентов.
+
+```ts
+class Component<T> {
+	constructor(protected container: HTMLElement) {}
+
+	setState(state: Partial<T>): void;
+	render(): void;
+	destroy(): void;
+}
+```
+
+---
+
+#### `Modal`, `Basket`, `Form`, `Success`
+
+Наследуются от `Component<unknown>`. Реализуют специфичный UI.
+
+```ts
+class Modal extends Component<unknown> {
+	open(): void;
+	close(): void;
+}
+```
+
+```ts
+class Form extends Component<OrderFormData | ContactFormData> {
+	validate(): boolean;
+	getData(): OrderFormData | ContactFormData;
+}
+```
+
+---
+
+#### `Page`, `Card`, `Order`, `Contacts`
+
+Наследники `Component<T>` с конкретной реализацией отображения.
+
+```ts
+class Card extends Component<Product> {
+	constructor(container: HTMLElement, product: Product, events: IEvents);
+	render(): void;
+	handleClick(): void;
+}
+```
+
+---
+
+### Класс модели (Model)
+
+#### `AppData`
+
+Хранит состояние приложения. Отвечает за бизнесс-логику.
+
+```ts
+class AppData {
+	private catalog: Product[] = [];
+	private basket: CartItem[] = [];
+	private order: OrderFormData = { payment: 'cash', address: '' };
+	private contacts: ContactFormData = { email: '', phone: '' };
+
+	setCatalog(items: Product[]): void;
+	getCatalog(): Product[];
+
+	addToCart(product: Product): void;
+	removeFromCart(productId: string): void;
+	getCart(): CartItem[];
+
+	setOrder(data: OrderFormData): void;
+	getOrder(): OrderFormData;
+
+	setContacts(data: ContactFormData): void;
+	getContacts(): ContactFormData;
+}
+```
+
+---
+
+### Посредник (EventEmitter)
+
+#### `EventEmitter`
+
+Универсальный механизм событий.
+
+```ts
+type EventHandler<T> = (payload: T) => void;
+
+class EventEmitter {
+	on<K extends keyof AppEventMap>(
+		event: K,
+		handler: EventHandler<AppEventMap[K]>
+	): void;
+	off<K extends keyof AppEventMap>(
+		event: K,
+		handler: EventHandler<AppEventMap[K]>
+	): void;
+	emit<K extends keyof AppEventMap>(event: K, payload: AppEventMap[K]): void;
+	onAll(handler: (event: string, payload: unknown) => void): void;
+	trigger(event: string): void;
+}
+```
+
+---
+
+## Схема наследования View
+
+```
+               Component<T>
+                   ↑
+ ┌─────────────────┼─────────────────┐
+ │                 │                 │
+Modal          Basket             Form
+                                    ↑
+                         ┌──────────┴───────────┐
+                       Order               Contacts
+
+     (параллельно)
+                   Page, Card, Success
+```
+
+---
+
+## Схема связи компонентов
+
+```
+   [User Action]
+        ↓
+     [View] ------------------.
+        ↓                    |
+  [EventEmitter]             |
+        ↓                    ↑
+    [AppData] <-------------'
+        ↓
+     [Presenter]
+        ↓
+     [View update]
+```
