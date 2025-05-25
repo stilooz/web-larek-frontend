@@ -90,10 +90,8 @@ events.on<{ product: Product }>('catalog: productSelected', ({ product }) => {
 
 events.on<{ product: Product }>('cart: add', ({ product }) => {
 	const existingItem = cart.find((item) => item.product.id === product.id);
-	if (existingItem) {
-		existingItem.quantity += 1;
-	} else {
-		cart.push({ product, quantity: 1 });
+	if (!existingItem) {
+		cart.push({ product });
 	}
 
 	renderCartModal();
@@ -115,10 +113,10 @@ function renderCartModal() {
 		basketItem.querySelector('.card__title')!.textContent = item.product.title;
 		basketItem.querySelector(
 			'.card__price'
-		)!.textContent = `${item.product.price} * ${item.quantity} синапсов`;
+		)!.textContent = `${item.product.price} синапсов`;
 
 		list.append(basketItem);
-		sum += item.product.price * item.quantity;
+		sum += item.product.price || 0;
 	});
 	total.textContent = `${sum} синапсов`;
 
