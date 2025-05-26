@@ -15,6 +15,8 @@ const events = new EventEmitter();
 
 const cart: CartItem[] = [];
 
+const modalContainer = document.getElementById('modal-container')!;
+
 function renderProductCard(product: Product): HTMLElement {
 	const card = cloneTemplate<HTMLButtonElement>('#card-catalog');
 
@@ -69,7 +71,6 @@ events.on<{ product: Product }>('catalog: productSelected', ({ product }) => {
 	const priceElement = modal.querySelector('.card__price');
 	if (priceElement) priceElement.textContent = `${product.price} синапсов`;
 
-	const modalContainer = document.getElementById('modal-container');
 	if (modalContainer) {
 		const modalContent = modalContainer.querySelector('.modal__content');
 		if (modalContent) {
@@ -120,7 +121,6 @@ function renderCartModal() {
 	});
 	total.textContent = `${sum} синапсов`;
 
-	const modalContainer = document.getElementById('modal-container');
 	if (modalContainer) {
 		const modalContent = modalContainer.querySelector('.modal__content');
 		if (modalContent) {
@@ -138,7 +138,6 @@ function renderCartModal() {
 function renderOrderForm() {
 	const modal = cloneTemplate<HTMLFormElement>('#order');
 
-	const modalContainer = document.getElementById('modal-container');
 	if (modalContainer) {
 		const modalContent = modalContainer.querySelector('.modal__content');
 		if (modalContent) {
@@ -197,7 +196,6 @@ function initOrderForm(modal: HTMLFormElement) {
 function renderContactsForm() {
 	const modal = cloneTemplate<HTMLFormElement>('#contacts');
 
-	const modalContainer = document.getElementById('modal-container');
 	if (modalContainer) {
 		const modalContent = modalContainer.querySelector('.modal__content');
 		if (modalContent) {
@@ -244,7 +242,6 @@ function initContactsForm(modal: HTMLFormElement) {
 function renderSuccessModal() {
 	const modal = cloneTemplate<HTMLDivElement>('#success');
 
-	const modalContainer = document.getElementById('modal-container');
 	if (modalContainer) {
 		const modalContent = modalContainer.querySelector('.modal__content');
 		if (modalContent) {
