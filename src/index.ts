@@ -173,11 +173,19 @@ function initOrderForm(modal: HTMLFormElement) {
 	const addressInput = modal.querySelector<HTMLInputElement>(
 		'input[name="address"]'
 	);
+
 	const nextButton = modal.querySelector<HTMLButtonElement>('.order__button');
+	const errorContainer = modal.querySelector('.form__errors');
 
 	function validate() {
 		const isValid = payment && addressInput?.value.trim();
 		if (nextButton) nextButton.disabled = !isValid;
+
+		if (!isValid && errorContainer) {
+			errorContainer.textContent = 'Заполните способ оплаты и адрес';
+		} else if (errorContainer) {
+			errorContainer.textContent = '';
+		}
 	}
 
 	cardBtn?.addEventListener('click', () => {
