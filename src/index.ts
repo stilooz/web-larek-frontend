@@ -206,13 +206,17 @@ function initOrderForm(modal: HTMLFormElement) {
 
 	modal.addEventListener('submit', (e) => {
 		e.preventDefault();
-		if (!payment || !addressInput?.value.trim()) return;
-
+		if (!payment || !addressInput?.value.trim()) {
+			if (errorContainer) {
+				errorContainer.textContent = 'Заполните способ оплаты и адрес';
+			}
+			return;
+		}
 		events.emit('order:submit', {
 			payment,
 			address: addressInput.value.trim(),
 		});
-
+		//сюда
 		renderContactsForm();
 	});
 }
@@ -238,25 +242,84 @@ function initContactsForm(modal: HTMLFormElement) {
 	const submitButton = modal.querySelector<HTMLButtonElement>(
 		'button[type="submit"]'
 	);
+	const errorContainer = modal.querySelector('.form__errors');
 
 	function validate() {
-		const isValid = emailInput?.value.trim() && phoneInput?.value.trim();
+		const email = emailInput?.value.trim() ?? '';
+		const phone = phoneInput?.value.trim() ?? '';
+
+		const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+		const isPhoneValid = /^\+7\d{10}$/.test(phone);
+		const isValid = isEmailValid && isPhoneValid;
+
 		if (submitButton) submitButton.disabled = !isValid;
+
+		if (!isValid && errorContainer) {
+			if (!email || !isEmailValid) {
+				errorContainer.textContent = 'Введите корректный email';
+			} else if (!phone || !isPhoneValid) {
+				errorContainer.textContent = 'Введите корректный номер телефона';
+			} else {
+				errorContainer.textContent = 'Заполните почту и телефон';
+			}
+		} else if (errorContainer) {
+			errorContainer.textContent = '';
+		}
 	}
 
-	emailInput?.addEventListener('input', validate);
-	phoneInput?.addEventListener('input', validate);
+	//ограничение ввода только латиницей и допустимыми символами email проверить
+	emailInput?.addEventListener('input', () => {
+		emailInput.value = emailInput.value.replace(/[^a-zA-Z0-9@._\-]/g, '');
+		validate();
+	});
+
+	//ограничение ввода только на + и цифры проверить
+	phoneInput?.addEventListener('keydown', (e) => {
+		const allowedKeys = [
+			'Backspace',
+			'ArrowLeft',
+			'ArrowRight',
+			'Delete',
+			'Tab',
+		];
+		const isControl = allowedKeys.includes(e.key);
+		const isDigit = /^\d$/.test(e.key);
+		const isPlusAtStart = e.key === '+' && phoneInput.selectionStart === 0;
+
+		if (!isDigit && !isControl && !isPlusAtStart) {
+			e.preventDefault();
+		}
+	});
+
+	//ограничение длины до 12 символов (+7 и 10 цифр) проверить
+	phoneInput?.addEventListener('input', () => {
+		if (phoneInput.value.length > 12) {
+			phoneInput.value = phoneInput.value.slice(0, 12);
+		}
+		validate();
+	});
 
 	modal.addEventListener('submit', (e) => {
 		e.preventDefault();
-		if (!emailInput?.value || !phoneInput?.value) return;
 
-		events.emit('order:submit', {
-			email: emailInput.value.trim(),
-			phone: phoneInput.value.trim(),
-		});
+		const email = emailInput?.value.trim() ?? '';
+		const phone = phoneInput?.value.trim() ?? '';
+
+		const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+		const isPhoneValid = /^\+7\d{10}$/.test(phone);
+
+		if (!isEmailValid || !isPhoneValid) {
+			if (errorContainer) {
+				errorContainer.textContent = 'Поля заполнены неверно';
+			}
+			return;
+		}
+
+		events.emit('order:submit', { email, phone });
 
 		renderSuccessModal();
+		cart.length = 0;
+		events.emit('cart: update', { items: cart });
 	});
 }
 
