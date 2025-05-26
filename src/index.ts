@@ -125,15 +125,14 @@ function renderCartModal() {
 	});
 	total.textContent = `${sum} синапсов`;
 
-	if (modalContainer) {
-		const modalContent = modalContainer.querySelector('.modal__content');
-		if (modalContent) {
-			modalContent.innerHTML = '';
-			modalContent.append(modal);
-			modalContainer.classList.add('modal_active');
-			initModalClose();
-		}
+	const modalContent = modalContainer.querySelector('.modal__content');
+	if (modalContent) {
+		modalContent.innerHTML = '';
+		modalContent.append(modal);
+		modalContainer.classList.add('modal_active');
+		initModalClose();
 	}
+
 	const orderButton = modal.querySelector('.basket__button');
 	orderButton?.addEventListener('click', () => {
 		renderOrderForm();
@@ -142,17 +141,14 @@ function renderCartModal() {
 
 function renderOrderForm() {
 	const modal = cloneTemplate<HTMLFormElement>('#order');
-
-	if (modalContainer) {
-		const modalContent = modalContainer.querySelector('.modal__content');
-		if (modalContent) {
-			modalContent.innerHTML = '';
-			modalContent.append(modal);
-			modalContainer.classList.add('modal_active');
-			initModalClose();
-			initOrderForm(modal);
-		}
+	const modalContent = modalContainer.querySelector('.modal__content');
+	if (modalContent) {
+		modalContent.innerHTML = '';
+		modalContent.append(modal);
+		modalContainer.classList.add('modal_active');
 	}
+	initModalClose();
+	initOrderForm(modal);
 }
 
 function initOrderForm(modal: HTMLFormElement) {
@@ -201,15 +197,12 @@ function initOrderForm(modal: HTMLFormElement) {
 
 function renderContactsForm() {
 	const modal = cloneTemplate<HTMLFormElement>('#contacts');
-
-	if (modalContainer) {
-		const modalContent = modalContainer.querySelector('.modal__content');
-		if (modalContent) {
-			modalContent.innerHTML = '';
-			modalContent.append(modal);
-			modalContainer.classList.add('modal_active');
-			initContactsForm(modal);
-		}
+	const modalContent = modalContainer.querySelector('.modal__content');
+	if (modalContent) {
+		modalContent.innerHTML = '';
+		modalContent.append(modal);
+		modalContainer.classList.add('modal_active');
+		initContactsForm(modal);
 	}
 }
 
@@ -248,13 +241,11 @@ function initContactsForm(modal: HTMLFormElement) {
 function renderSuccessModal() {
 	const modal = cloneTemplate<HTMLDivElement>('#success');
 
-	if (modalContainer) {
-		const modalContent = modalContainer.querySelector('.modal__content');
-		if (modalContent) {
-			modalContent.innerHTML = '';
-			modalContent.append(modal);
-			modalContainer.classList.add('modal_active');
-		}
+	const modalContent = modalContainer.querySelector('.modal__content');
+	if (modalContent) {
+		modalContent.innerHTML = '';
+		modalContent.append(modal);
+		modalContainer.classList.add('modal_active');
 	}
 
 	initModalClose();
