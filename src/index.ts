@@ -98,8 +98,17 @@ events.on<{ product: Product }>('cart: add', ({ product }) => {
 	if (!existingItem) {
 		cart.push({ product });
 	}
-
+	events.emit('cart: update', { items: cart });
 	renderCartModal();
+});
+
+events.on<{ productId: string }>('cart: remove', ({ productId }) => {
+	const index = cart.findIndex((item) => item.product.id === productId);
+	if (index !== -1) {
+		cart.splice(index, 1);
+		events.emit('cart: update', { items: cart });
+		renderCartModal();
+	}
 });
 
 function renderCartModal() {
@@ -122,6 +131,11 @@ function renderCartModal() {
 
 		list.append(basketItem);
 		sum += item.product.price || 0;
+		//удаление из корзины
+		const deleteButton = basketItem.querySelector('.basket__item-delete');
+		deleteButton?.addEventListener('click', () => {
+			events.emit('cart: remove', { productId: item.product.id });
+		});
 	});
 	total.textContent = `${sum} синапсов`;
 
@@ -258,5 +272,12 @@ document.querySelector('.header__basket')?.addEventListener('click', () => {
 modalContainer?.addEventListener('click', (event) => {
 	if (event.target === modalContainer) {
 		modalContainer.classList.remove('modal_active');
+	}
+});
+
+const counter = document.querySelector('.header__basket-counter');
+events.on<{ items: CartItem[] }>('cart: update', ({ items }) => {
+	if (counter) {
+		counter.textContent = String(items.length);
 	}
 });
