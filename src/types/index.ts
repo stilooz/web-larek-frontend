@@ -29,3 +29,5 @@ export interface AppEventMap {
 	'order: submit': { order: OrderFormData & ContactFormData };
 	'order: success': { orderId: string };
 }
+
+//фиксирую ветку
