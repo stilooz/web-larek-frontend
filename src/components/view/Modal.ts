@@ -4,7 +4,7 @@ export class Modal {
 	private _container: HTMLElement;
 	private _content: HTMLElement;
 
-	constructor(containerSelector: string = '#modal-container') {
+	constructor(containerSelector = '#modal-container') {
 		this._container = ensureElement(containerSelector);
 		this._content = this._container.querySelector('.modal__content')!;
 		this._initEvents();

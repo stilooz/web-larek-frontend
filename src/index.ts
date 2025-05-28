@@ -1,5 +1,5 @@
 import './scss/styles.scss';
-import './scss/styles.scss';
+import { Product } from './types';
 import { API_URL } from './utils/constants';
 import { EventEmitter } from './components/base/events';
 import { LarekApi } from './components/base/api-larek';
@@ -47,13 +47,18 @@ apiModel.getProducts().then((products) => {
 const basketButton = document.querySelector('.header__basket');
 basketButton?.addEventListener('click', () => {
 	modal.open(basketView['_wrapper']);
-	basketView.render(basketModel.getItems());
+	basketView.setItems(basketModel.getItems());
 });
 
 //добавление товара в корзину
-events.on('product:add', ({ product }) => {
-	basketModel.add(product);
-	basketView.render(basketModel.getItems());
+events.on('product:add', (data) => {
+	if ('product' in data) {
+		const { product } = data as { product: Product };
+		basketModel.add(product);
+		basketView.setItems(basketModel.getItems());
+	} else {
+		console.warn('Некорректное событие product:add', data);
+	}
 });
 
 //запуск оформления заказа

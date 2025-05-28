@@ -1,14 +1,11 @@
-import { IProductItem } from '../../types';
+import { Product } from '../../types';
 import { cloneTemplate } from '../../utils/utils';
 
 export class Card {
 	private _element: HTMLElement;
-	private _data: IProductItem;
+	private _data: Product;
 
-	constructor(
-		product: IProductItem,
-		templateSelector: string = '#card-catalog'
-	) {
+	constructor(product: Product, templateSelector = '#card-catalog') {
 		this._data = product;
 		this._element = this._createCard(templateSelector);
 	}

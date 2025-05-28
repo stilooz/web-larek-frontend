@@ -6,7 +6,7 @@ export class FormContacts {
 	private _emailInput: HTMLInputElement;
 	private _phoneInput: HTMLInputElement;
 
-	constructor(selector: string = '#contacts-form') {
+	constructor(selector = '#contacts-form') {
 		this._form = ensureElement<HTMLFormElement>(selector);
 		this._emailInput = this._form.elements.namedItem(
 			'email'

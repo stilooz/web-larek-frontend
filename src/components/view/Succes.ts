@@ -4,7 +4,7 @@ export class Success {
 	private _element: HTMLElement;
 	private _description: HTMLElement;
 
-	constructor(selector: string = '#success') {
+	constructor(selector = '#success') {
 		this._element = ensureElement(selector);
 		this._description = this._element.querySelector(
 			'.order-success__description'

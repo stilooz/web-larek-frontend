@@ -6,7 +6,7 @@ export class FormOrder {
 	private _addressInput: HTMLInputElement;
 	private _paymentButtons: NodeListOf<HTMLButtonElement>;
 
-	constructor(selector: string = '#order-form') {
+	constructor(selector = '#order-form') {
 		this._form = ensureElement<HTMLFormElement>(selector);
 		this._addressInput = this._form.elements.namedItem(
 			'address'

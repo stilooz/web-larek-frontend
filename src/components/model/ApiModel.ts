@@ -1,5 +1,5 @@
 import { LarekApi } from '../base/api-larek';
-import { IProductItem } from '../../types';
+import { Product } from '../../types';
 
 export class ApiModel {
 	private api: LarekApi;
@@ -8,7 +8,7 @@ export class ApiModel {
 		this.api = api;
 	}
 
-	getProducts(): Promise<IProductItem[]> {
+	getProducts(): Promise<Product[]> {
 		return this.api.getProductList().then((data) => data.items);
 	}
 }

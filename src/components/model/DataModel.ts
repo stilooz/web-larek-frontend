@@ -1,9 +1,9 @@
-import { IProductItem } from '../../types';
+import { Product } from '../../types';
 
 export class DataModel {
-	private items: IProductItem[] = [];
+	private items: Product[] = [];
 
-	setItems(items: IProductItem[]) {
+	setItems(items: Product[]) {
 		this.items = items;
 	}
 

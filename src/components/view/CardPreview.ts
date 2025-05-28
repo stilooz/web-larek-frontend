@@ -1,18 +1,15 @@
-import { IProductItem } from '../../types';
+import { Product } from '../../types';
 import { cloneTemplate } from '../../utils/utils';
 
 export class CardPreview {
 	private _element: HTMLElement;
 
-	constructor(
-		product: IProductItem,
-		templateSelector: string = '#card-preview'
-	) {
+	constructor(product: Product, templateSelector = '#card-preview') {
 		this._element = this._createPreview(product, templateSelector);
 	}
 
 	private _createPreview(
-		product: IProductItem,
+		product: Product,
 		templateSelector: string
 	): HTMLElement {
 		const preview = cloneTemplate<HTMLDivElement>(templateSelector);
@@ -33,8 +30,9 @@ export class CardPreview {
 			image.src = product.image;
 			image.alt = product.title;
 		}
-		if (button) button.dataset.id = product.id;
-
+		if (button instanceof HTMLElement) {
+			button.dataset.id = product.id;
+		}
 		return preview;
 	}
 
