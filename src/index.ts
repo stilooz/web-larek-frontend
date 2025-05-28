@@ -3,19 +3,18 @@ import './scss/styles.scss';
 import { API_URL } from './utils/constants';
 import { EventEmitter } from './components/base/events';
 import { LarekApi } from './components/base/api-larek';
-import { ApiModel } from './components/Model/ApiModel';
-import { DataModel } from './components/Model/DataModel';
-import { BasketModel } from './components/Model/BasketModel';
-import { FormModel } from './components/Model/FormModel';
-import { Modal } from './components/View/Modal';
-import { Card } from './components/View/Card';
-import { CardPreview } from './components/View/CardPreview';
-import { Basket } from './components/View/Basket';
-import { FormOrder } from './components/View/FormOrder';
-import { FormContacts } from './components/View/FormContacts';
-import { Success } from './components/View/Success';
+import { ApiModel } from './components/model/ApiModel';
+import { DataModel } from './components/model/DataModel';
+import { BasketModel } from './components/model/BasketModel';
+import { FormModel } from './components/model/FormModel';
+import { Modal } from './components/view/Modal';
+import { Card } from './components/view/Card';
+import { CardPreview } from './components/view/CardPreview';
+import { Basket } from './components/view/Basket';
+import { FormOrder } from './components/view/FormOrder';
+import { FormContacts } from './components/view/FormContacts';
+import { Success } from './components/view/Succes';
 
-// Инициализация
 const events = new EventEmitter();
 const api = new LarekApi(API_URL);
 const apiModel = new ApiModel(api);
@@ -29,7 +28,7 @@ const formOrder = new FormOrder();
 const formContacts = new FormContacts();
 const success = new Success();
 
-// Загрузка и отображение каталога
+//загрузка и отображение каталога
 apiModel.getProducts().then((products) => {
 	dataModel.setItems(products);
 	const catalog = document.querySelector('.catalog');
@@ -42,4 +41,48 @@ apiModel.getProducts().then((products) => {
 		});
 		catalog?.append(card.element);
 	});
+});
+
+//открытие корзины
+const basketButton = document.querySelector('.header__basket');
+basketButton?.addEventListener('click', () => {
+	modal.open(basketView['_wrapper']);
+	basketView.render(basketModel.getItems());
+});
+
+//добавление товара в корзину
+events.on('product:add', ({ product }) => {
+	basketModel.add(product);
+	basketView.render(basketModel.getItems());
+});
+
+//запуск оформления заказа
+const orderButton = document.querySelector('.basket__order');
+orderButton?.addEventListener('click', () => {
+	modal.open(formOrder.form);
+});
+
+//переход к контактам после выбора способа доставки
+formOrder.form.addEventListener('submit', (e) => {
+	e.preventDefault();
+	formModel.setOrder(formOrder.data);
+	if (formModel.isOrderValid()) {
+		modal.open(formContacts.form);
+	} else {
+		alert('Заполните адрес и выберите способ оплаты');
+	}
+});
+
+//завершение оформления
+formContacts.form.addEventListener('submit', (e) => {
+	e.preventDefault();
+	formModel.setContacts(formContacts.data);
+	if (formModel.isContactsValid()) {
+		const total = basketModel.getTotal();
+		basketModel.clear();
+		modal.open(success.element);
+		success.total = total;
+	} else {
+		alert('Введите корректные email и телефон');
+	}
 });
