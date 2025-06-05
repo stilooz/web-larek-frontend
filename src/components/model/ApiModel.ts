@@ -9,7 +9,9 @@ export class ApiModel extends Api {
 	}
 
 	getListProductCard(): Promise<Product[]> {
-		return this.get('/products') as Promise<Product[]>;
+		return this.get('/product').then(
+			(data: { items: Product[] }) => data.items
+		);
 	}
 
 	postOrderLot(data: object): Promise<object> {
