@@ -11,7 +11,7 @@ export class ApiModel extends Api {
 		return this.get('/products') as Promise<Product[]>;
 	}
 
-	postOrderLot(data: unknown): Promise<unknown> {
+	postOrderLot(data: object): Promise<object> {
 		return this.post('/order', data);
 	}
 }
