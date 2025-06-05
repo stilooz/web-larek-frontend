@@ -1,14 +1,35 @@
 import { Product } from '../../types';
 import { EventEmitter } from '../base/events';
+import { CDN_URL } from '../../utils/constants';
 
 export class Card {
 	public element: HTMLElement;
+	private product: Product;
+	private events: EventEmitter;
 
 	constructor(product: Product, events: EventEmitter) {
-		const card = document.createElement('div');
-		card.classList.add('card');
-		card.setAttribute('data-id', product.id);
+		this.product = product;
+		this.events = events;
+		this.element = this.createCard();
+		this.element.addEventListener('click', () => {
+			this.events.emit('card:select', { product: this.product });
+		});
+	}
 
+	createCard(): HTMLElement {
+		const template = document.getElementById(
+			'card-catalog'
+		) as HTMLTemplateElement;
+		const card = template.content.firstElementChild!.cloneNode(
+			true
+		) as HTMLElement;
+
+		const category = card.querySelector('.card__category') as HTMLElement;
+		const image = card.querySelector('.card__image') as HTMLImageElement;
+		const title = card.querySelector('.card__title') as HTMLElement;
+		const price = card.querySelector('.card__price') as HTMLElement;
+
+		category.textContent = this.product.category;
 		const categoryMap: Record<string, string> = {
 			'софт-скил': 'soft',
 			'хард-скил': 'hard',
@@ -17,40 +38,15 @@ export class Card {
 			дополнительное: 'additional',
 			фреймворк: 'framework',
 		};
+		const categoryClass = categoryMap[this.product.category] ?? 'other';
+		category.classList.add(`card__category_${categoryClass}`);
 
-		const rawCategory = product.category;
-		const mappedCategory = categoryMap[rawCategory] || 'other';
+		image.src = `${CDN_URL}/${this.product.image}`;
+		image.alt = this.product.title;
 
-		const category = document.createElement('div');
-		category.classList.add(
-			'card__category',
-			`card__category_${mappedCategory}`
-		);
-		category.textContent = rawCategory;
+		title.textContent = this.product.title;
+		price.textContent = `${this.product.price} синапсов`;
 
-		const title = document.createElement('h3');
-		title.classList.add('card__title');
-		title.textContent = product.title;
-
-		const info = document.createElement('div');
-		info.classList.add('card__info');
-		info.append(category, title);
-
-		const image = document.createElement('img');
-		image.classList.add('card__image');
-		image.src = `https://larek-api.nomoreparties.co/content/weblarek/${product.image}`;
-		image.alt = product.title;
-
-		const price = document.createElement('p');
-		price.classList.add('card__price');
-		price.textContent = `${product.price} синапсов`;
-
-		card.append(info, image, price);
-
-		card.addEventListener('click', () => {
-			events.emit('card:select', { product });
-		});
-
-		this.element = card;
+		return card;
 	}
 }
