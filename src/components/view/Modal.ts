@@ -26,12 +26,16 @@ export class Modal {
 	}
 
 	open(content: HTMLElement) {
+		this.container.style.top = `${window.scrollY}px`;
+		document.body.style.overflow = 'hidden';
 		this.content.innerHTML = '';
 		this.content.appendChild(content);
 		this.container.classList.add('modal_active');
 	}
 
 	close() {
+		document.body.style.overflow = '';
+		this.container.style.top = '';
 		this.container.classList.remove('modal_active');
 	}
 }
