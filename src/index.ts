@@ -1,17 +1,33 @@
 import './scss/styles.scss';
+import { Card } from './components/view/Card';
+import { EventEmitter } from './components/base/events';
 
 import { ApiModel } from './components/model/ApiModel';
 import { DataModel } from './components/model/DataModel';
+import type { Product } from './types';
 
 const api = new ApiModel();
 const dataModel = new DataModel();
 
+const events = new EventEmitter();
+const galleryContainer = document.querySelector('.gallery') as HTMLElement;
+
 api
 	.getListProductCard()
 	.then((products) => {
+		console.log('Товары с API:', products);
 		dataModel.setProducts(products);
-		console.log('Загруженные товары:', dataModel.getProducts());
+		events.emit('products:loaded', products);
 	})
 	.catch((err) => {
 		console.error('Ошибка загрузки товаров:', err);
 	});
+
+events.on('products:loaded', (products: Product[]) => {
+	if (!galleryContainer) return;
+	galleryContainer.innerHTML = '';
+	products.forEach((product) => {
+		const card = new Card(product, events);
+		galleryContainer.appendChild(card.element);
+	});
+});

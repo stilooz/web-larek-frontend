@@ -8,7 +8,7 @@ export class Card {
 		const card = document.createElement('div');
 		card.className = 'card';
 		card.setAttribute('data-id', product.id);
-
+		console.log('card data:', product);
 		card.innerHTML = `
       <img src="${product.image}" alt="${product.title}" class="card__image">
       <h3 class="card__title">${product.title}</h3>
