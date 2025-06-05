@@ -5,7 +5,9 @@ import { EventEmitter } from './components/base/events';
 import { ApiModel } from './components/model/ApiModel';
 import { DataModel } from './components/model/DataModel';
 import type { Product } from './types';
+import { Modal } from './components/view/Modal';
 
+const modal = new Modal('#modal-container');
 const api = new ApiModel();
 const dataModel = new DataModel();
 
@@ -30,4 +32,11 @@ events.on('products:loaded', (products: Product[]) => {
 		const card = new Card(product, events);
 		galleryContainer.appendChild(card.element);
 	});
+});
+
+import { CardPreview } from './components/view/CardPreview';
+
+events.on('card:select', ({ product }: { product: Product }) => {
+	const preview = new CardPreview(product);
+	modal.open(preview.element);
 });

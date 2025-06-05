@@ -45,7 +45,9 @@ export class Card {
 		image.alt = this.product.title;
 
 		title.textContent = this.product.title;
-		price.textContent = `${this.product.price} синапсов`;
+		price.textContent = this.product.price
+			? `${this.product.price} синапсов`
+			: 'Бесценно';
 
 		return card;
 	}
