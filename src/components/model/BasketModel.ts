@@ -2,9 +2,9 @@ import { Product } from '../../types';
 import { EventEmitter } from '../base/events';
 
 export class BasketModel {
-	private items: Product[] = [];
+	public items: Product[] = [];
 
-	constructor(private events: EventEmitter) {}
+	constructor(public events: EventEmitter) {}
 
 	addItem(product: Product) {
 		const exists = this.items.find((item) => item.id === product.id);
@@ -15,6 +15,7 @@ export class BasketModel {
 	}
 
 	removeItem(productId: string) {
+		console.log('BasketModel: removing product with id:', productId);
 		this.items = this.items.filter((item) => item.id !== productId);
 		this.events.emit('basket:changed', [...this.items]);
 	}

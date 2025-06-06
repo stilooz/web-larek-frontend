@@ -80,4 +80,7 @@ export class Basket {
 	getItems(): Product[] {
 		return this.items;
 	}
+	open() {
+		this.container.classList.add('modal_active');
+	}
 }

@@ -1,40 +1,48 @@
+let currentCardPreview: CardPreview | null = null;
+
 import './scss/styles.scss';
-import { Card } from './components/view/Card';
 import { EventEmitter } from './components/base/events';
-import { CardPreview } from './components/view/CardPreview';
 import { ApiModel } from './components/model/ApiModel';
-import { DataModel } from './components/model/DataModel';
-import type { Product } from './types';
 import { Modal } from './components/view/Modal';
+import { CatalogPresenter } from './components/base/CatalogPresenter';
+import { Basket } from './components/view/Basket';
+import { BasketPresenter } from './components/base/BasketPresenter';
+import { BasketModel } from './components/model/BasketModel';
+import { Product } from './types';
+import { CDN_URL } from './utils/constants';
+import { CardPreview } from './components/view/CardPreview';
 
 const modal = new Modal('#modal-container');
 const api = new ApiModel();
-const dataModel = new DataModel();
-
 const events = new EventEmitter();
+
 const galleryContainer = document.querySelector('.gallery') as HTMLElement;
 
-api
-	.getListProductCard()
-	.then((products) => {
-		console.log('Товары с API:', products);
-		dataModel.setProducts(products);
-		events.emit('products:loaded', products);
-	})
-	.catch((err) => {
-		console.error('Ошибка загрузки товаров:', err);
-	});
+const catalog = new CatalogPresenter(api, galleryContainer, events);
 
-events.on('products:loaded', (products: Product[]) => {
-	if (!galleryContainer) return;
-	galleryContainer.innerHTML = '';
-	products.forEach((product) => {
-		const card = new Card(product, events);
-		galleryContainer.appendChild(card.element);
+const basketModel = new BasketModel(events);
+
+events.on('card:select', (product: Product) => {
+	currentCardPreview = new CardPreview(product);
+	currentCardPreview.updateButton(basketModel.items);
+	modal.open(currentCardPreview.element);
+});
+
+events.on('basket:changed', () => {
+	if (modal.isOpen && currentCardPreview) {
+		currentCardPreview.updateButton(basketModel.items);
+	}
+});
+
+document.addEventListener('basket:add', (event: Event) => {
+	const custom = event as CustomEvent;
+	events.emit('basket:add', {
+		id: custom.detail.id,
+		catalog: catalog.items,
 	});
 });
 
-events.on('card:select', ({ product }: { product: Product }) => {
-	const preview = new CardPreview(product);
-	modal.open(preview.element);
-});
+catalog.init();
+
+const basketView = new Basket(events);
+const basketPresenter = new BasketPresenter(basketModel, basketView, events);

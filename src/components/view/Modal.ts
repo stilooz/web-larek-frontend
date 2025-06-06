@@ -25,6 +25,14 @@ export class Modal {
 		});
 	}
 
+	public get isOpen(): boolean {
+		return this.container.classList.contains('modal_active');
+	}
+
+	public get getContent(): HTMLElement {
+		return this.content;
+	}
+
 	open(content: HTMLElement) {
 		this.container.style.top = `${window.scrollY}px`;
 		document.body.style.overflow = 'hidden';

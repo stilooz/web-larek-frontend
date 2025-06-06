@@ -1,30 +1,68 @@
+import { BasketModel } from '../model/BasketModel';
 import { Product } from '../../types';
+import { CDN_URL } from '../../utils/constants';
 
 export class CardPreview {
 	public element: HTMLElement;
+	private button: HTMLButtonElement | null = null;
+	private productId: string;
 
 	constructor(product: Product) {
 		const template = document.getElementById(
 			'card-preview'
 		) as HTMLTemplateElement;
+
+		if (!template) {
+			throw new Error('Шаблон #card-preview не найден в index.html');
+		}
+
 		const card = template.content.firstElementChild!.cloneNode(
 			true
 		) as HTMLElement;
 
-		card
-			.querySelector('.card__image')!
-			.setAttribute(
-				'src',
-				`https://larek-api.nomoreparties.co/content/weblarek/${product.image}`
-			);
-		card.querySelector('.card__image')!.setAttribute('alt', product.title);
-		card.querySelector('.card__title')!.textContent = product.title;
-		card.querySelector('.card__text')!.textContent = product.description;
-		card.querySelector('.card__category')!.textContent = product.category;
-		card.querySelector('.card__price')!.textContent = product.price
-			? `${product.price} синапсов`
-			: 'Бесценно';
+		(
+			card.querySelector('.card__image') as HTMLImageElement
+		).src = `${CDN_URL}/${product.image}`;
+		(card.querySelector('.card__image') as HTMLImageElement).alt =
+			product.title;
+
+		const title = card.querySelector('.card__title');
+		if (title) title.textContent = product.title;
+
+		const description = card.querySelector('.card__text');
+		if (description) description.textContent = product.description;
+
+		const category = card.querySelector('.card__category');
+		if (category) category.textContent = product.category;
+
+		const price = card.querySelector('.card__price');
+		if (price) {
+			price.textContent = product.price
+				? `${product.price} синапсов`
+				: 'Бесценно';
+		}
 
 		this.element = card;
+		this.productId = product.id;
+
+		this.button = card.querySelector('.card__button') as HTMLButtonElement;
+		if (this.button) {
+			this.button.addEventListener('click', () => {
+				console.log('CardPreview emitting basket:add for id:', product.id);
+				document.dispatchEvent(
+					new CustomEvent('basket:add', {
+						detail: { id: product.id },
+					})
+				);
+			});
+		}
+	}
+
+	public updateButton(basketItems: Product[]) {
+		if (!this.button) return;
+
+		const isInBasket = basketItems.some((item) => item.id === this.productId);
+		this.button.textContent = 'Купить';
+		this.button.disabled = isInBasket;
 	}
 }

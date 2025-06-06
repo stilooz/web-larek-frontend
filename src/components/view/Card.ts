@@ -12,7 +12,7 @@ export class Card {
 		this.events = events;
 		this.element = this.createCard();
 		this.element.addEventListener('click', () => {
-			this.events.emit('card:select', { product: this.product });
+			this.events.emit('card:select', this.product);
 		});
 	}
 
@@ -48,6 +48,14 @@ export class Card {
 		price.textContent = this.product.price
 			? `${this.product.price} синапсов`
 			: 'Бесценно';
+
+		const button = card.querySelector('.card__button') as HTMLElement;
+		if (button) {
+			button.addEventListener('click', (evt) => {
+				evt.stopPropagation();
+				this.events.emit('card:buy', this.product);
+			});
+		}
 
 		return card;
 	}
