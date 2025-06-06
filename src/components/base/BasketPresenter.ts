@@ -15,7 +15,7 @@ export class BasketPresenter {
 
 		this.subscribeEvents();
 	}
-	//тест
+
 	private subscribeEvents() {
 		this.events.on('card:buy', (product: Product) => {
 			this.model.addItem(product);
@@ -31,18 +31,24 @@ export class BasketPresenter {
 			}
 		);
 
-		this.events.on('basket:remove', (product: Product) => {
-			this.model.removeItem(product.id);
-			this.events.emit('basket:changed');
+		this.events.on('basket:remove', (payload: { id: string }) => {
+			this.model.removeItem(payload.id);
+			this.view.render(this.model.getItems());
+			this.updateCounter(this.model.getItems().length);
+			this.updateCardPreviewButton(this.model.getItems());
 		});
 
 		this.events.on('basket:clear', () => {
 			this.model.clear();
 		});
 
+		this.events.on('basket:open', () => {
+			this.view.open();
+		});
+
 		this.model.events.on('basket:changed', (items: Product[]) => {
 			this.view.render(items);
-			this.updateCounter(items.length);
+			this.updateCounter(Array.isArray(items) ? items.length : 0);
 			this.updateCardPreviewButton(items);
 		});
 	}

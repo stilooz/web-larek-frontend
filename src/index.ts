@@ -1,5 +1,3 @@
-let currentCardPreview: CardPreview | null = null;
-
 import './scss/styles.scss';
 import { EventEmitter } from './components/base/events';
 import { ApiModel } from './components/model/ApiModel';
@@ -12,15 +10,16 @@ import { Product } from './types';
 import { CDN_URL } from './utils/constants';
 import { CardPreview } from './components/view/CardPreview';
 
-const modal = new Modal('#modal-container');
-const api = new ApiModel();
 const events = new EventEmitter();
+const modal = new Modal('#modal-container', events);
+const api = new ApiModel();
 
 const galleryContainer = document.querySelector('.gallery') as HTMLElement;
 
 const catalog = new CatalogPresenter(api, galleryContainer, events);
 
 const basketModel = new BasketModel(events);
+let currentCardPreview: CardPreview | null = null;
 
 events.on('card:select', (product: Product) => {
 	currentCardPreview = new CardPreview(product);
@@ -45,4 +44,11 @@ document.addEventListener('basket:add', (event: Event) => {
 catalog.init();
 
 const basketView = new Basket(events);
+document.body.append(basketView.render(basketModel.items));
+
 const basketPresenter = new BasketPresenter(basketModel, basketView, events);
+
+document.querySelector('.header__basket')?.addEventListener('click', () => {
+	console.log('basket icon clicked');
+	events.emit('basket:open');
+});

@@ -1,13 +1,17 @@
+import { EventEmitter } from '../base/events';
 export class Modal {
 	private container: HTMLElement;
 	private content: HTMLElement;
 	private closeButton: HTMLElement;
 
-	constructor(containerSelector: string) {
+	constructor(containerSelector: string, events: EventEmitter) {
 		this.container = document.querySelector(containerSelector) as HTMLElement;
 		this.content = this.container.querySelector(
 			'.modal__content'
 		) as HTMLElement;
+		events.on('modal:open', (content: HTMLElement) => {
+			this.open(content);
+		});
 		this.closeButton = this.container.querySelector(
 			'.modal__close'
 		) as HTMLElement;

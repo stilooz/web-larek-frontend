@@ -15,15 +15,15 @@ export class Basket {
 		const basketTemplate = document.getElementById(
 			'basket'
 		) as HTMLTemplateElement;
-		const basket = basketTemplate.content.firstElementChild!.cloneNode(
+		const container = basketTemplate.content.firstElementChild!.cloneNode(
 			true
 		) as HTMLElement;
 
-		this.element = basket;
-		this.container = basket;
-		this.list = basket.querySelector('.basket__list')!;
-		this.price = basket.querySelector('.basket__price')!;
-		this.button = basket.querySelector('.basket__button')!;
+		this.element = container;
+		this.container = container;
+		this.list = container.querySelector('.basket__list')!;
+		this.price = container.querySelector('.basket__price')!;
+		this.button = container.querySelector('.basket__button')!;
 		this.template = document.getElementById(
 			'card-basket'
 		) as HTMLTemplateElement;
@@ -32,8 +32,6 @@ export class Basket {
 		this.button.addEventListener('click', () => {
 			this.events.emit('order:submit');
 		});
-
-		document.body.appendChild(basket);
 
 		this.events.on('basket:changed', (items) => {
 			if (!Array.isArray(items)) {
@@ -45,7 +43,11 @@ export class Basket {
 		});
 	}
 
-	render(items: Product[]) {
+	render(items: Product[] = []): HTMLElement {
+		if (!Array.isArray(items)) {
+			console.error('Basket.render(): items is not array:', items);
+			items = [];
+		}
 		this.list.innerHTML = '';
 
 		let total = 0;
@@ -53,6 +55,10 @@ export class Basket {
 			const item = this.template.content.firstElementChild!.cloneNode(
 				true
 			) as HTMLElement;
+			console.log('rendering item:', product.title);
+			console.log('before classes:', item.className);
+			item.classList.add('card');
+			console.log('after classes:', item.className);
 			item.querySelector('.basket__item-index')!.textContent = String(
 				index + 1
 			);
@@ -61,11 +67,14 @@ export class Basket {
 				? `${product.price} синапсов`
 				: 'Бесценно';
 			total += product.price ?? 0;
-			item
-				.querySelector('.basket__item-delete')
-				?.addEventListener('click', () => {
-					this.events.emit('basket:remove', product);
+			const deleteButton = item.querySelector('.basket__item-delete');
+			if (deleteButton) {
+				deleteButton.setAttribute('data-id', String(product.id));
+				deleteButton.addEventListener('click', () => {
+					const id = (deleteButton as HTMLElement).dataset.id;
+					this.events.emit('basket:remove', { id });
 				});
+			}
 
 			this.list.appendChild(item);
 		});
@@ -75,12 +84,14 @@ export class Basket {
 
 		this.counter.textContent = String(items.length);
 		this.counter.classList.toggle('basket__counter--visible', items.length > 0);
+
+		return this.container;
 	}
 
 	getItems(): Product[] {
 		return this.items;
 	}
 	open() {
-		this.container.classList.add('modal_active');
+		this.events.emit('modal:open', this.container);
 	}
 }

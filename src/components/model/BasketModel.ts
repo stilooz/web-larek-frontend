@@ -15,7 +15,6 @@ export class BasketModel {
 	}
 
 	removeItem(productId: string) {
-		console.log('BasketModel: removing product with id:', productId);
 		this.items = this.items.filter((item) => item.id !== productId);
 		this.events.emit('basket:changed', [...this.items]);
 	}
