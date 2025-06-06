@@ -1,7 +1,7 @@
 import './scss/styles.scss';
 import { Card } from './components/view/Card';
 import { EventEmitter } from './components/base/events';
-
+import { CardPreview } from './components/view/CardPreview';
 import { ApiModel } from './components/model/ApiModel';
 import { DataModel } from './components/model/DataModel';
 import type { Product } from './types';
@@ -33,8 +33,6 @@ events.on('products:loaded', (products: Product[]) => {
 		galleryContainer.appendChild(card.element);
 	});
 });
-
-import { CardPreview } from './components/view/CardPreview';
 
 events.on('card:select', ({ product }: { product: Product }) => {
 	const preview = new CardPreview(product);
