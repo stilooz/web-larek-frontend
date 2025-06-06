@@ -15,7 +15,7 @@ export class BasketPresenter {
 
 		this.subscribeEvents();
 	}
-
+	//тест
 	private subscribeEvents() {
 		this.events.on('card:buy', (product: Product) => {
 			this.model.addItem(product);
