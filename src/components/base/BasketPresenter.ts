@@ -46,6 +46,11 @@ export class BasketPresenter {
 			this.view.open();
 		});
 
+		this.events.on('order:submit', () => {
+			this.view.close();
+			this.events.emit('order:open');
+		});
+
 		this.model.events.on('basket:changed', (items: Product[]) => {
 			this.view.render(items);
 			this.updateCounter(Array.isArray(items) ? items.length : 0);

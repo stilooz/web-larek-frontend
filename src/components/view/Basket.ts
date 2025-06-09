@@ -94,4 +94,8 @@ export class Basket {
 	open() {
 		this.events.emit('modal:open', this.container);
 	}
+
+	close() {
+		this.events.emit('modal:close');
+	}
 }

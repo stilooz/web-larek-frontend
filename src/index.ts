@@ -3,6 +3,7 @@ import { EventEmitter } from './components/base/events';
 import { ApiModel } from './components/model/ApiModel';
 import { Modal } from './components/view/Modal';
 import { CatalogPresenter } from './components/base/CatalogPresenter';
+import { FormOrder } from './components/view/FormOrder';
 import { Basket } from './components/view/Basket';
 import { BasketPresenter } from './components/base/BasketPresenter';
 import { BasketModel } from './components/model/BasketModel';
@@ -52,3 +53,9 @@ document.querySelector('.header__basket')?.addEventListener('click', () => {
 	console.log('basket icon clicked');
 	events.emit('basket:open');
 });
+
+// Инициализация формы заказа и подписка на событие order:open
+const orderForm = new FormOrder(
+	events,
+	document.querySelector('.modal__content') as HTMLElement
+);
