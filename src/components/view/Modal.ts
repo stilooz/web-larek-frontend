@@ -15,10 +15,7 @@ export class Modal {
 		this.closeButton = this.container.querySelector(
 			'.modal__close'
 		) as HTMLElement;
-		console.log('container', this.container);
-		console.log('closeButton', this.closeButton);
 		this.closeButton.addEventListener('click', () => {
-			console.log('click on close');
 			this.close();
 		});
 		this.container.addEventListener('click', (event) => {

@@ -11,19 +11,18 @@ export class FormOrder {
 			const clone = template?.content.cloneNode(true);
 			if (!(clone instanceof DocumentFragment)) return;
 
-			const modal = document.querySelector('#modal-container');
-			const content = modal?.querySelector('.modal__content');
-			if (!modal || !content) return;
+			const formElement = clone.querySelector('form');
+			if (!formElement) return;
 
-			content.replaceChildren(clone);
-			modal.classList.add('modal_active');
-
-			const cardBtn = content.querySelector('button[name="card"]');
-			const cashBtn = content.querySelector('button[name="cash"]');
-			const addressInput = content.querySelector<HTMLInputElement>(
+			const cardBtn = formElement.querySelector('button[name="card"]');
+			const cashBtn = formElement.querySelector('button[name="cash"]');
+			const addressInput = formElement.querySelector<HTMLInputElement>(
 				'input[name="address"]'
 			);
-			const nextButton = content.querySelector<HTMLButtonElement>(
+			const addressWrapper = formElement.querySelector<HTMLElement>(
+				'.order__field:last-of-type'
+			);
+			const nextButton = formElement.querySelector<HTMLButtonElement>(
 				'button[type="submit"]'
 			);
 
@@ -53,6 +52,8 @@ export class FormOrder {
 			});
 
 			addressInput?.addEventListener('input', updateState);
+
+			this.events.emit('modal:open', formElement);
 		});
 	}
 }

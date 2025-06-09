@@ -54,7 +54,6 @@ document.querySelector('.header__basket')?.addEventListener('click', () => {
 	events.emit('basket:open');
 });
 
-// Инициализация формы заказа и подписка на событие order:open
 const orderForm = new FormOrder(
 	events,
 	document.querySelector('.modal__content') as HTMLElement
