@@ -1,6 +1,23 @@
 import { EventEmitter } from '../base/events';
 
 export class FormModel extends EventEmitter {
+	static validateContacts(data: { email: string; phone: string }) {
+		const errors: { email?: string; phone?: string } = {};
+		let valid = true;
+
+		if (!data.email.trim()) {
+			errors.email = 'Введите Email';
+			valid = false;
+		}
+
+		if (!data.phone.trim()) {
+			errors.phone = 'Введите номер телефона';
+			valid = false;
+		}
+
+		return { valid, errors };
+	}
+
 	async submitOrder(orderData: Record<string, unknown>) {
 		try {
 			const response = await fetch('/api/orders', {
@@ -9,7 +26,7 @@ export class FormModel extends EventEmitter {
 				body: JSON.stringify(orderData),
 			});
 			if (!response.ok) {
-				throw new Error('Order submission failed');
+				throw new Error('Не удалось');
 			}
 			this.emit('order:submit', orderData);
 			return await response.json();

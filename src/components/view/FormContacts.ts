@@ -1,4 +1,5 @@
 import { EventEmitter } from '../base/events';
+import { FormModel } from '../model/FormModel';
 
 export class FormContacts {
 	private container: HTMLFormElement;
@@ -20,22 +21,37 @@ export class FormContacts {
 			const email = form.elements.namedItem('email') as HTMLInputElement;
 			const phone = form.elements.namedItem('phone') as HTMLInputElement;
 
-			let isValid = true;
-
 			email.classList.remove('form__input_type_error');
 			phone.classList.remove('form__input_type_error');
 
-			if (!email.value.trim()) {
-				email.classList.add('form__input_type_error');
-				isValid = false;
+			let errorNode = form.querySelector('.form__error') as HTMLElement;
+
+			if (!errorNode) {
+				const fallback = form.querySelector('.order__field') || form;
+				errorNode = document.createElement('span');
+				errorNode.classList.add('form__error');
+				fallback.appendChild(errorNode);
 			}
 
-			if (!phone.value.trim()) {
-				phone.classList.add('form__input_type_error');
-				isValid = false;
-			}
+			errorNode.textContent = '';
 
-			if (!isValid) return;
+			const validation = FormModel.validateContacts({
+				email: email.value,
+				phone: phone.value,
+			});
+
+			if (!validation.valid) {
+				if (validation.errors.email) {
+					email.classList.add('form__input_type_error');
+				}
+
+				if (validation.errors.phone) {
+					phone.classList.add('form__input_type_error');
+				}
+
+				errorNode.textContent = 'Пожалуйста, заполните все поля.';
+				return;
+			}
 
 			this.events.emit('order:submit', {
 				email: email.value,
