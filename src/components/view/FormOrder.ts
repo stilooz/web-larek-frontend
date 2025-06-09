@@ -1,4 +1,5 @@
 import { EventEmitter } from '../base/events';
+import { FormContacts } from './FormContacts';
 
 export class FormOrder {
 	constructor(private events: EventEmitter, private container: HTMLElement) {
@@ -54,7 +55,23 @@ export class FormOrder {
 			addressInput?.addEventListener('input', updateState);
 
 			this.events.emit('modal:open', formElement);
+
+			formElement.addEventListener('submit', (e) => {
+				e.preventDefault();
+
+				const address = addressInput?.value.trim();
+				if (!paymentSelected || !address) {
+					alert('Пожалуйста, заполните адрес и выберите способ оплаты.');
+					return;
+				}
+
+				const modalContent = document.querySelector('.modal__content');
+				if (!modalContent) return;
+
+				const contactsForm = new FormContacts(this.events);
+				modalContent.innerHTML = '';
+				modalContent.append(contactsForm.render());
+			});
 		});
 	}
 }
-//в
