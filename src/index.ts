@@ -10,7 +10,7 @@ import { BasketModel } from './components/model/BasketModel';
 import { Product } from './types';
 import { CDN_URL } from './utils/constants';
 import { CardPreview } from './components/view/CardPreview';
-
+//еы
 const events = new EventEmitter();
 const modal = new Modal('#modal-container', events);
 const api = new ApiModel();

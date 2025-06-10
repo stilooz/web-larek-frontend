@@ -30,7 +30,7 @@ export class FormContacts {
 				const fallback = form.querySelector('.order__field') || form;
 				errorNode = document.createElement('span');
 				errorNode.classList.add('form__error');
-				fallback.appendChild(errorNode);
+				fallback.append(errorNode);
 			}
 
 			errorNode.textContent = '';
@@ -39,6 +39,14 @@ export class FormContacts {
 				email: email.value,
 				phone: phone.value,
 			});
+
+			const showError = () => {
+				if (!email.value.trim() || !phone.value.trim()) {
+					errorNode.textContent = 'Пожалуйста, заполните все поля.';
+				} else {
+					errorNode.textContent = '';
+				}
+			};
 
 			if (!validation.valid) {
 				if (validation.errors.email) {
@@ -58,6 +66,30 @@ export class FormContacts {
 				phone: phone.value,
 			});
 		});
+
+		const email = form.elements.namedItem('email') as HTMLInputElement;
+		const phone = form.elements.namedItem('phone') as HTMLInputElement;
+
+		const showError = () => {
+			if (!email.value.trim() || !phone.value.trim()) {
+				let errorNode = form.querySelector('.form__error') as HTMLElement;
+				if (!errorNode) {
+					const fallback = form.querySelector('.order__field') || form;
+					errorNode = document.createElement('span');
+					errorNode.classList.add('form__error');
+					fallback.append(errorNode);
+				}
+				errorNode.textContent = 'Пожалуйста, заполните все поля.';
+			} else {
+				const errorNode = form.querySelector('.form__error') as HTMLElement;
+				if (errorNode) {
+					errorNode.textContent = '';
+				}
+			}
+		};
+
+		email.addEventListener('input', showError);
+		phone.addEventListener('input', showError);
 
 		this.container = form;
 		return form;

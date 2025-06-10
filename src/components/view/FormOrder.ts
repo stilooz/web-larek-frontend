@@ -20,56 +20,73 @@ export class FormOrder {
 			const addressInput = formElement.querySelector<HTMLInputElement>(
 				'input[name="address"]'
 			);
-			const addressWrapper = formElement.querySelector<HTMLElement>(
-				'.order__field:last-of-type'
-			);
 			const nextButton = formElement.querySelector<HTMLButtonElement>(
 				'button[type="submit"]'
 			);
 
-			let paymentSelected = '';
+			let selectedPayment: 'card' | 'cash' | null = null;
 
-			const updateState = () => {
-				const address = addressInput?.value.trim();
-				if (paymentSelected && address) {
-					nextButton?.removeAttribute('disabled');
+			const errorContainer = formElement.querySelector('.form__errors');
+
+			const updateButtonState = () => {
+				const isAddressFilled = !!addressInput?.value.trim();
+				const isPaymentSelected = !!selectedPayment;
+				if (nextButton) {
+					nextButton.disabled = !(isAddressFilled && isPaymentSelected);
+				}
+			};
+
+			const showError = () => {
+				if (!selectedPayment || !addressInput?.value.trim()) {
+					errorContainer.textContent =
+						'Выберите способ оплаты и введите адрес доставки.';
 				} else {
-					nextButton?.setAttribute('disabled', 'true');
+					errorContainer.textContent = '';
 				}
 			};
 
 			cardBtn?.addEventListener('click', () => {
+				selectedPayment = 'card';
 				cardBtn.classList.add('button_alt-active');
 				cashBtn?.classList.remove('button_alt-active');
-				paymentSelected = 'card';
-				updateState();
+				updateButtonState();
+				showError();
 			});
 
 			cashBtn?.addEventListener('click', () => {
+				selectedPayment = 'cash';
 				cashBtn.classList.add('button_alt-active');
 				cardBtn?.classList.remove('button_alt-active');
-				paymentSelected = 'cash';
-				updateState();
+				updateButtonState();
+				showError();
 			});
 
-			addressInput?.addEventListener('input', updateState);
+			addressInput?.addEventListener('input', () => {
+				updateButtonState();
+				showError();
+			});
 
 			this.events.emit('modal:open', formElement);
 
 			formElement.addEventListener('submit', (e) => {
 				e.preventDefault();
 
-				const address = addressInput?.value.trim();
-				if (!paymentSelected || !address) {
-					alert('Пожалуйста, заполните адрес и выберите способ оплаты.');
+				if (!selectedPayment || !addressInput?.value.trim()) {
+					if (errorContainer) {
+						errorContainer.textContent =
+							'Выберите способ оплаты и введите адрес доставки.';
+					}
 					return;
+				}
+				if (errorContainer) {
+					errorContainer.textContent = '';
 				}
 
 				const modalContent = document.querySelector('.modal__content');
 				if (!modalContent) return;
 
-				const contactsForm = new FormContacts(this.events);
 				modalContent.innerHTML = '';
+				const contactsForm = new FormContacts(this.events);
 				modalContent.append(contactsForm.render());
 			});
 		});
