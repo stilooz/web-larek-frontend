@@ -27,10 +27,10 @@ export class FormContacts {
 			let errorNode = form.querySelector('.form__error') as HTMLElement;
 
 			if (!errorNode) {
-				const fallback = form.querySelector('.order__field') || form;
+				const orderField = form.querySelector('.order__field:last-of-type');
 				errorNode = document.createElement('span');
 				errorNode.classList.add('form__error');
-				fallback.append(errorNode);
+				orderField?.insertAdjacentElement('afterend', errorNode);
 			}
 
 			errorNode.textContent = '';
@@ -74,10 +74,10 @@ export class FormContacts {
 			if (!email.value.trim() || !phone.value.trim()) {
 				let errorNode = form.querySelector('.form__error') as HTMLElement;
 				if (!errorNode) {
-					const fallback = form.querySelector('.order__field') || form;
+					const orderField = form.querySelector('.order__field:last-of-type');
 					errorNode = document.createElement('span');
 					errorNode.classList.add('form__error');
-					fallback.append(errorNode);
+					orderField?.insertAdjacentElement('afterend', errorNode);
 				}
 				errorNode.textContent = 'Пожалуйста, заполните все поля.';
 			} else {
@@ -88,6 +88,9 @@ export class FormContacts {
 			}
 		};
 
+		email.addEventListener('input', () => {
+			email.value = email.value.replace(/[А-Яа-яЁё]/g, '');
+		});
 		email.addEventListener('input', showError);
 		phone.addEventListener('input', showError);
 

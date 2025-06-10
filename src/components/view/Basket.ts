@@ -24,6 +24,10 @@ export class Basket {
 		this.list = container.querySelector('.basket__list')!;
 		this.price = container.querySelector('.basket__price')!;
 		this.button = container.querySelector('.basket__button')!;
+		const basketTemplateCheck = document.getElementById('card-basket');
+		if (!basketTemplateCheck) {
+			console.error('шаблон не найден');
+		}
 		this.template = document.getElementById(
 			'card-basket'
 		) as HTMLTemplateElement;
@@ -55,10 +59,7 @@ export class Basket {
 			const item = this.template.content.firstElementChild!.cloneNode(
 				true
 			) as HTMLElement;
-			console.log('rendering item:', product.title);
-			console.log('before classes:', item.className);
 			item.classList.add('card');
-			console.log('after classes:', item.className);
 			item.querySelector('.basket__item-index')!.textContent = String(
 				index + 1
 			);

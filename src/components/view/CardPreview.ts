@@ -6,6 +6,7 @@ export class CardPreview {
 	public element: HTMLElement;
 	private button: HTMLButtonElement | null = null;
 	private productId: string;
+	private price: number | string | null;
 
 	constructor(product: Product) {
 		const template = document.getElementById(
@@ -37,15 +38,23 @@ export class CardPreview {
 
 		const price = card.querySelector('.card__price');
 		if (price) {
-			price.textContent = product.price
-				? `${product.price} синапсов`
-				: 'Бесценно';
+			price.textContent =
+				product.price !== null &&
+				product.price !== undefined &&
+				product.price !== 0
+					? `${product.price} синапсов`
+					: 'Бесценно';
+		}
+
+		this.button = card.querySelector('.card__button') as HTMLButtonElement;
+		if (this.button && typeof product.price !== 'number') {
+			this.button.disabled = true;
 		}
 
 		this.element = card;
 		this.productId = product.id;
+		this.price = product.price;
 
-		this.button = card.querySelector('.card__button') as HTMLButtonElement;
 		if (this.button) {
 			this.button.addEventListener('click', () => {
 				console.log('CardPreview emitting basket:add for id:', product.id);
@@ -60,6 +69,10 @@ export class CardPreview {
 
 	public updateButton(basketItems: Product[]) {
 		if (!this.button) return;
+		if (typeof this.price !== 'number') {
+			this.button.disabled = true;
+			return;
+		}
 
 		const isInBasket = basketItems.some((item) => item.id === this.productId);
 		this.button.textContent = 'Купить';
