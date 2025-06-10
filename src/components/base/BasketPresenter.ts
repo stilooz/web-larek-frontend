@@ -33,7 +33,6 @@ export class BasketPresenter {
 		);
 
 		this.events.on('basket:remove', (payload: { id: string }) => {
-			// Изменяем модель, рендер выполнится в подписчике
 			this.model.removeItem(payload.id);
 		});
 
@@ -59,7 +58,6 @@ export class BasketPresenter {
 					.getItems()
 					.reduce((sum, item) => sum + (item.price ?? 0), 0);
 
-				// Очистка модели вызовет basket:changed и единый рендер
 				this.model.clear();
 
 				const successModal = new Success(this.events, total).render();
@@ -67,7 +65,6 @@ export class BasketPresenter {
 			}
 		);
 
-		// Единая точка обновления UI
 		this.model.events.on('basket:changed', (items: Product[]) => {
 			this.view.render(items);
 			this.updateCardPreviewButton(items);

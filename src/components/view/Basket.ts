@@ -36,8 +36,6 @@ export class Basket {
 		this.button.addEventListener('click', () => {
 			this.events.emit('order:submit');
 		});
-
-		// Подписка на basket:changed перенесена в BasketPresenter
 	}
 
 	render(items: Product[] = []): HTMLElement {
