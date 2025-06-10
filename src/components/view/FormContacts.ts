@@ -27,10 +27,10 @@ export class FormContacts {
 			let errorNode = form.querySelector('.form__error') as HTMLElement;
 
 			if (!errorNode) {
-				const orderField = form.querySelector('.order__field:last-of-type');
+				const button = form.querySelector('.order__button');
 				errorNode = document.createElement('span');
 				errorNode.classList.add('form__error');
-				orderField?.insertAdjacentElement('afterend', errorNode);
+				button?.insertAdjacentElement('beforebegin', errorNode);
 			}
 
 			errorNode.textContent = '';
@@ -72,13 +72,7 @@ export class FormContacts {
 
 		const showError = () => {
 			if (!email.value.trim() || !phone.value.trim()) {
-				let errorNode = form.querySelector('.form__error') as HTMLElement;
-				if (!errorNode) {
-					const orderField = form.querySelector('.order__field:last-of-type');
-					errorNode = document.createElement('span');
-					errorNode.classList.add('form__error');
-					orderField?.insertAdjacentElement('afterend', errorNode);
-				}
+				const errorNode = form.querySelector('.form__errors') as HTMLElement;
 				errorNode.textContent = 'Пожалуйста, заполните все поля.';
 			} else {
 				const errorNode = form.querySelector('.form__error') as HTMLElement;
@@ -93,6 +87,9 @@ export class FormContacts {
 		});
 		email.addEventListener('input', showError);
 		phone.addEventListener('input', showError);
+		phone.addEventListener('input', () => {
+			phone.value = phone.value.replace(/[^\d()+\-\s]/g, '');
+		});
 
 		this.container = form;
 		return form;
