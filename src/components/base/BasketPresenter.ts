@@ -33,10 +33,8 @@ export class BasketPresenter {
 		);
 
 		this.events.on('basket:remove', (payload: { id: string }) => {
+			// Изменяем модель, рендер выполнится в подписчике
 			this.model.removeItem(payload.id);
-			this.view.render(this.model.getItems());
-			this.updateCounter(this.model.getItems().length);
-			this.updateCardPreviewButton(this.model.getItems());
 		});
 
 		this.events.on('basket:clear', () => {
@@ -59,23 +57,19 @@ export class BasketPresenter {
 
 				const total = this.model
 					.getItems()
-					.reduce(
-						(sum, item: Product & { price?: number }) =>
-							sum + (item.price ?? 0),
-						0
-					);
+					.reduce((sum, item) => sum + (item.price ?? 0), 0);
 
+				// Очистка модели вызовет basket:changed и единый рендер
 				this.model.clear();
-				this.updateCounter(0);
 
 				const successModal = new Success(this.events, total).render();
 				this.events.emit('modal:open', successModal);
 			}
 		);
 
+		// Единая точка обновления UI
 		this.model.events.on('basket:changed', (items: Product[]) => {
 			this.view.render(items);
-			this.updateCounter(Array.isArray(items) ? items.length : 0);
 			this.updateCardPreviewButton(items);
 		});
 	}
@@ -105,17 +99,5 @@ export class BasketPresenter {
 			});
 		}
 		button.replaceWith(newButton);
-	}
-
-	private updateCounter(count: number) {
-		const counterEl = document.querySelector('.header__basket-counter');
-		if (!counterEl) return;
-
-		counterEl.textContent = count.toString();
-		if (count > 0) {
-			counterEl.classList.add('basket__counter--visible');
-		} else {
-			counterEl.classList.remove('basket__counter--visible');
-		}
 	}
 }

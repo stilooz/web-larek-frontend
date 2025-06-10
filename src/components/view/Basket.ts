@@ -37,14 +37,7 @@ export class Basket {
 			this.events.emit('order:submit');
 		});
 
-		this.events.on('basket:changed', (items) => {
-			if (!Array.isArray(items)) {
-				console.error('basket:changed received non-array:', items);
-				return;
-			}
-			this.items = items;
-			this.render(items);
-		});
+		// Подписка на basket:changed перенесена в BasketPresenter
 	}
 
 	render(items: Product[] = []): HTMLElement {
@@ -52,6 +45,7 @@ export class Basket {
 			console.error('Basket.render(): items is not array:', items);
 			items = [];
 		}
+		this.items = items;
 		this.list.innerHTML = '';
 
 		let total = 0;
@@ -73,7 +67,9 @@ export class Basket {
 				deleteButton.setAttribute('data-id', String(product.id));
 				deleteButton.addEventListener('click', () => {
 					const id = (deleteButton as HTMLElement).dataset.id;
-					this.events.emit('basket:remove', { id });
+					if (id) {
+						this.events.emit('basket:remove', { id });
+					}
 				});
 			}
 
@@ -90,8 +86,9 @@ export class Basket {
 	}
 
 	getItems(): Product[] {
-		return this.items;
+		return [...this.items];
 	}
+
 	open() {
 		this.events.emit('modal:open', this.container);
 	}
