@@ -51,7 +51,7 @@ export class Basket {
 			const item = this.template.content.firstElementChild!.cloneNode(
 				true
 			) as HTMLElement;
-			item.classList.add('card');
+			item.classList.add('basket__item', 'card', 'card_compact');
 			item.querySelector('.basket__item-index')!.textContent = String(
 				index + 1
 			);
