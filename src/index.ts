@@ -45,7 +45,6 @@ document.addEventListener('basket:add', (event: Event) => {
 catalog.init();
 
 const basketView = new Basket(events);
-document.body.append(basketView.render(basketModel.items));
 
 const basketPresenter = new BasketPresenter(basketModel, basketView, events);
 
