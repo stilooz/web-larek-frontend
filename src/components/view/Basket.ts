@@ -48,30 +48,9 @@ export class Basket {
 
 		let total = 0;
 		items.forEach((product, index) => {
-			const item = this.template.content.firstElementChild!.cloneNode(
-				true
-			) as HTMLElement;
-			item.classList.add('basket__item', 'card', 'card_compact');
-			item.querySelector('.basket__item-index')!.textContent = String(
-				index + 1
-			);
-			item.querySelector('.card__title')!.textContent = product.title;
-			item.querySelector('.card__price')!.textContent = product.price
-				? `${product.price} синапсов`
-				: 'Бесценно';
-			total += product.price ?? 0;
-			const deleteButton = item.querySelector('.basket__item-delete');
-			if (deleteButton) {
-				deleteButton.setAttribute('data-id', String(product.id));
-				deleteButton.addEventListener('click', () => {
-					const id = (deleteButton as HTMLElement).dataset.id;
-					if (id) {
-						this.events.emit('basket:remove', { id });
-					}
-				});
-			}
-
+			const item = this.renderItem(product, index);
 			this.list.appendChild(item);
+			total += product.price ?? 0;
 		});
 
 		this.price.textContent = `${total} синапсов`;
@@ -81,6 +60,42 @@ export class Basket {
 		this.counter.classList.toggle('basket__counter--visible', items.length > 0);
 
 		return this.container;
+	}
+
+	private renderItem(product: Product, index: number): HTMLElement {
+		const item = this.template.content.firstElementChild!.cloneNode(
+			true
+		) as HTMLElement;
+
+		const indexElement = item.querySelector(
+			'.basket__item-index'
+		) as HTMLElement;
+		const titleElement = item.querySelector('.card__title') as HTMLElement;
+		const priceElement = item.querySelector('.card__price') as HTMLElement;
+		const deleteButton = item.querySelector(
+			'.basket__item-delete'
+		) as HTMLElement;
+
+		item.classList.add('basket__item', 'card', 'card_compact');
+
+		if (indexElement) indexElement.textContent = String(index + 1);
+		if (titleElement) titleElement.textContent = product.title;
+		if (priceElement)
+			priceElement.textContent = product.price
+				? `${product.price} синапсов`
+				: 'Бесценно';
+
+		if (deleteButton) {
+			deleteButton.setAttribute('data-id', String(product.id));
+			deleteButton.addEventListener('click', () => {
+				const id = deleteButton.dataset.id;
+				if (id) {
+					this.events.emit('basket:remove', { id });
+				}
+			});
+		}
+
+		return item;
 	}
 
 	getItems(): Product[] {
