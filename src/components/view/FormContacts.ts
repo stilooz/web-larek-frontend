@@ -71,20 +71,15 @@ export class FormContacts {
 
 			const digitsPhone = phone.value.replace(/[^\d]/g, '');
 
-			const validation = FormModel.validateContacts({
+			const formModel = new FormModel(this.events);
+			const valid = formModel.validate({
 				email: email.value.trim(),
 				phone: digitsPhone,
 			});
 
-			if (!validation.valid) {
-				if (validation.errors.email) {
-					email.classList.add('form__input_type_error');
-				}
-
-				if (validation.errors.phone) {
-					phone.classList.add('form__input_type_error');
-				}
-
+			if (!valid) {
+				email.classList.add('form__input_type_error');
+				phone.classList.add('form__input_type_error');
 				errorNode.textContent = 'Пожалуйста, заполните все поля.';
 				return;
 			}

@@ -16,4 +16,8 @@ export class ApiModel extends Api {
 	postOrderLot(data: object): Promise<object> {
 		return this.post('/order', data);
 	}
+
+	submitOrder(orderData: object): Promise<object> {
+		return this.post('/order', orderData);
+	}
 }

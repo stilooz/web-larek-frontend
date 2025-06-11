@@ -1,39 +1,25 @@
 import { EventEmitter } from '../base/events';
-import type { OrderInfo, ContactData } from '../../types';
+import type { ContactData } from '../../types';
 
 export class FormModel extends EventEmitter {
-	static validateContacts(data: ContactData) {
-		const errors: { email?: string; phone?: string } = {};
-		let valid = true;
-
-		if (!data.email.trim()) {
-			errors.email = 'Введите Email';
-			valid = false;
+	constructor(events?: EventEmitter) {
+		super();
+		if (events) {
+			this.subscribe(events);
 		}
-
-		if (!data.phone.trim()) {
-			errors.phone = 'Введите номер телефона';
-			valid = false;
-		}
-
-		return { valid, errors };
 	}
 
-	async submitOrder(orderData: OrderInfo) {
-		try {
-			const response = await fetch('/api/orders', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(orderData),
-			});
-			if (!response.ok) {
-				throw new Error('Не удалось');
-			}
-			this.emit('order:submit', orderData);
-			return await response.json();
-		} catch (error) {
-			console.error(error);
-			throw error;
+	private subscribe(events: EventEmitter) {
+		events.on('form:error', (data: { message: string }) => {
+			this.emit('form:error', data);
+		});
+	}
+
+	validate(data: ContactData) {
+		const valid = data.email.trim() !== '' && data.phone.trim() !== '';
+		if (!valid) {
+			this.emit('form:error', { message: 'Введите Email и номер телефона' });
 		}
+		return valid;
 	}
 }
