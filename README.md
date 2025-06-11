@@ -47,11 +47,162 @@ yarn build
 
 ## Архитектура проекта
 
-Проект реализован по принципу **MVP (Model-View-Presenter)**, обеспечивая чёткое разделение ответственности:
+### Структура проекта:
 
-- **Model** — загрузка данных по API, сохранение и обработка данных от пользователя.
-- **View** — отображение интерфейса и обработка пользовательских событий.
-- **Presenter** — реализован с помощью EventEmitter, связывает модели и представления при возникновении событий.
+- src/ — исходные файлы проекта
+- src/components/ — папка с JS-компонентами
+- src/components/base/ — папка с базовым кодом
+
+**Важные файлы:**
+
+- src/pages/index.html — HTML-файл главной страницы
+- src/types/index.ts — файл с типами
+- src/index.ts — точка входа приложения
+- src/scss/styles.scss — корневой файл стилей
+- src/utils/constants.ts — файл с константами
+- src/utils/utils.ts — файл с утилитами
+
+### Установка и запуск
+
+Для установки и запуска проекта необходимо выполнить команды:
+
+```
+npm install
+npm run start
+```
+
+или
+
+```
+yarn
+yarn start
+```
+
+### Сборка
+
+```
+npm run build
+```
+
+или
+
+```
+yarn build
+```
+
+### MVP-архитектура
+
+Проект разделен по паттерну **Model-View-Presenter**, где:
+
+- **Model** — управление данными и бизнес-логика. Отвечает за загрузку товаров с API, хранение состояния корзины, валидацию форм и подготовку данных для отправки.
+- **View** — пользовательский интерфейс. Отрисовывает компоненты, реагирует на действия пользователя (клики, ввод данных) и отражает состояние приложения.
+- **Presenter** — посредник между Model и View (реализован на основе EventEmitter). Обрабатывает события от View, запрашивает обновление данных у Model и инициирует перерисовку View.
+
+### Базовые классы
+
+**EventEmitter** — общий класс для работы с событиями:
+
+- `on(event, handler)` — подписка на событие;
+- `off(event, handler)` — отмена подписки;
+- `emit(event, data)` — генерация события с данными;
+- `onAll(handler)` / `offAll(handler)` — универсальная подписка;
+- `trigger(name, callback)` — вызов коллбэка по событию.
+
+**Api** — базовый клиент для HTTP-запросов:
+
+- `handleResponse(response)` — преобразование ответа в JSON или выброс ошибки;
+- `get(url)` — GET-запрос;
+- `post(url, data, method)` — POST/PUT/DELETE-запрос.
+
+**Model** — родительский класс для моделей данных:
+
+- `emitChanges()` — уведомление подписчиков об изменении состояния.
+
+**Component** — базовый класс для UI-компонентов:
+
+- `toggleClass(className)` — переключение CSS-класса;
+- `setText(text)` — установка текстового содержимого;
+- `setDisabled(state)` — блокировка/разблокировка элемента;
+- `setHidden()` / `setVisible()` — управление видимостью;
+- `setImage(src, alt)` — установка изображения;
+- `render()` — генерация и возвращение DOM-элемента.
+
+### Класс AppState
+
+Отвечает за глобальное состояние приложения:
+
+- `addToBasket(item: IProductItem)` — добавить товар в корзину;
+- `removeFromBasket(item: IProductItem)` — удалить товар из корзины;
+- `clearBasket()` — очистить корзину;
+- `setDelivery(data: IDeliveryForm)` — сохранить данные доставки;
+- `setContacts(data: IContactsForm)` — сохранить контактные данные;
+- `setCatalog(items: IProductItem[])` — установить список товаров;
+- `setPreview(id: string \| null)` — установить товар для предпросмотра;
+- `validateDelivery(): IFormState` — проверить форму доставки;
+- `validateContacts(): IFormState` — проверить форму контактов.
+
+### Компоненты представления
+
+**ContactsForm** — форма ввода email и телефона, наследуется от Component.  
+**DeliveryForm** — выбор способа оплаты и адреса, наследуется от Component.  
+**Page** — корневой компонент страницы, отображает каталог и корзину.  
+**Card** — карточка товара с данными и кнопкой действия, расширяет IProductItem.  
+**Basket** — отображение содержимого корзины и итоговой суммы.  
+**Modal** — обёртка для модальных окон с любым содержимым.  
+**Success** — экран подтверждения заказа с итоговой суммой.
+
+## Типы данных
+
+#### Основные типы из src/types/index.ts
+
+```ts
+export type Product = {
+	id: string;
+	title: string;
+	description: string;
+	image: string;
+	category: string;
+	price: number;
+};
+
+export type PaymentMethod = 'card' | 'cash';
+
+export type DeliveryData = {
+	address: string;
+	payment: PaymentMethod;
+};
+
+export type ContactData = {
+	email: string;
+	phone: string;
+};
+
+export type OrderInfo = {
+	delivery: DeliveryData;
+	contacts: ContactData;
+	items: Product[];
+};
+```
+
+#### Типы событий из EventEmitter
+
+```ts
+type EventName = string | RegExp;
+type Subscriber = Function;
+type EmitterEvent = {
+	eventName: string;
+	data: unknown;
+};
+
+export interface IEvents {
+	on<T extends object>(event: EventName, callback: (data: T) => void): void;
+	emit<T extends object>(event: string, data?: T): void;
+	trigger<T extends object>(
+		event: string,
+		context?: Partial<T>
+	): (data: T) => void;
+}
+```
 
 ## Модели (Model)
 
@@ -75,14 +226,6 @@ yarn build
 - `setSelectedСard(product)` — добавление товара в корзину;
 - `deleteCardToBasket(product)` — удаление товара из корзины;
 - `clearBasketProducts()` — очистка корзины.
-
-### `DataModel`
-
-Хранение данных о продуктах.
-
-**Метод:**
-
-- `setPreview(product)` — установка данных выбранного товара.
 
 ### `FormModel`
 
