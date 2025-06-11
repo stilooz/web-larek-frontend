@@ -9,6 +9,17 @@ export class BasketPresenter {
 	private view: Basket;
 	private events: EventEmitter;
 
+	private modalContainer = document.querySelector('.modal') as HTMLElement;
+	private cardContainer = this.modalContainer?.querySelector(
+		'.card'
+	) as HTMLElement;
+	private cardButton = this.cardContainer?.querySelector(
+		'.card__button'
+	) as HTMLButtonElement;
+	private cardTitle = this.cardContainer?.querySelector(
+		'.card__title'
+	) as HTMLElement;
+
 	constructor(model: BasketModel, view: Basket, events: EventEmitter) {
 		this.model = model;
 		this.view = view;
@@ -72,29 +83,26 @@ export class BasketPresenter {
 	}
 
 	private updateCardPreviewButton(items: Product[]) {
-		const modal = document.querySelector('.modal');
-		if (!modal || !modal.classList.contains('modal_active')) return;
+		if (
+			!this.modalContainer ||
+			!this.modalContainer.classList.contains('modal_active')
+		)
+			return;
+		if (!this.cardContainer || !this.cardButton || !this.cardTitle) return;
 
-		const card = modal.querySelector('.card');
-		if (!card) return;
-
-		const button = card.querySelector('.card__button') as HTMLButtonElement;
-		const titleEl = card.querySelector('.card__title');
-		if (!button || !titleEl) return;
-
-		const productId = titleEl.getAttribute('data-id');
+		const productId = this.cardTitle.getAttribute('data-id');
 		if (!productId) return;
 
 		const isInBasket = items.some((item) => item.id === productId);
-		button.textContent = 'Купить';
-		button.disabled = isInBasket;
+		this.cardButton.textContent = 'Купить';
+		this.cardButton.disabled = isInBasket;
 
-		const newButton = button.cloneNode(true) as HTMLButtonElement;
+		const newButton = this.cardButton.cloneNode(true) as HTMLButtonElement;
 		if (!isInBasket) {
 			newButton.addEventListener('click', () => {
 				this.events.emit('basket:add', { id: productId });
 			});
 		}
-		button.replaceWith(newButton);
+		this.cardButton.replaceWith(newButton);
 	}
 }
