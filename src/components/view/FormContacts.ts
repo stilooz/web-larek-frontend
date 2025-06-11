@@ -1,4 +1,5 @@
 import { EventEmitter } from '../base/events';
+import type { ContactData } from '../../types';
 import { FormModel } from '../model/FormModel';
 export class FormContacts {
 	private container: HTMLFormElement;
@@ -93,7 +94,7 @@ export class FormContacts {
 			this.events.emit('order:submit', {
 				email: email.value,
 				phone: digitsPhone,
-			});
+			} as ContactData);
 		});
 
 		email.addEventListener('input', () => {
