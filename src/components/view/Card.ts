@@ -23,7 +23,7 @@ export class Card {
 		const card = template.content.firstElementChild!.cloneNode(
 			true
 		) as HTMLElement;
-
+		//ы
 		const category = card.querySelector('.card__category') as HTMLElement;
 		const image = card.querySelector('.card__image') as HTMLImageElement;
 		const title = card.querySelector('.card__title') as HTMLElement;
