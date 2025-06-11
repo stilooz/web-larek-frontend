@@ -98,7 +98,6 @@ export class FormContacts {
 
 		toggleButtonState();
 
-		// this.container = form;
 		return form;
 	}
 }

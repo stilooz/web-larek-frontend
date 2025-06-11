@@ -49,7 +49,6 @@ document.body.append(basketView.render(basketModel.items));
 
 const basketPresenter = new BasketPresenter(basketModel, basketView, events);
 
-// Инициализация логики оформления заказа
 new OrderPresenter(
 	events,
 	basketModel,

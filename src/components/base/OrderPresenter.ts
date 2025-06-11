@@ -16,9 +16,7 @@ export class OrderPresenter {
 		private modalContainer: HTMLElement
 	) {
 		this.api = new ApiModel();
-		// Инициализируем форму оформления (шаг выбора доставки)
 		new FormOrder(this.events, this.modalContainer);
-		// Инициализируем форму ввода контактных данных (шаг контактов)
 		new FormContacts(this.events, this.modalContainer);
 		this.subscribeEvents();
 	}
