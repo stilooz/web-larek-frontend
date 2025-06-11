@@ -25,38 +25,18 @@ export class FormContacts {
 			'button[type="submit"], .order__button'
 		);
 
-		const showError = () => {
-			let errorNode = form.querySelector('.form__error') as HTMLElement;
-
-			if (!errorNode) {
-				errorNode = document.createElement('span');
-				errorNode.classList.add('form__error');
-				submitButton?.insertAdjacentElement('afterend', errorNode);
-			}
-
-			if (!email.value.trim() || !phone.value.trim()) {
-				errorNode.textContent = 'Пожалуйста, заполните все поля.';
-			} else {
-				errorNode.textContent = '';
-			}
-		};
-
 		const toggleButtonState = () => {
-			const digitsPhone = phone.value.replace(/[^\d]/g, '');
-			const isFilled = email.value.trim() !== '' && digitsPhone.length === 11;
+			const isFilled =
+				email.value.trim() !== '' &&
+				phone.value.replace(/[^\d]/g, '').length === 11;
 
 			if (submitButton) {
 				submitButton.disabled = !isFilled;
 			}
-
-			showError();
 		};
 
 		form.addEventListener('submit', (event) => {
 			event.preventDefault();
-
-			email.classList.remove('form__input_type_error');
-			phone.classList.remove('form__input_type_error');
 
 			let errorNode = form.querySelector('.form__error') as HTMLElement;
 
@@ -72,19 +52,17 @@ export class FormContacts {
 			const digitsPhone = phone.value.replace(/[^\d]/g, '');
 
 			const formModel = new FormModel(this.events);
-			const valid = formModel.validate({
+			const isValid = formModel.validate({
 				email: email.value.trim(),
 				phone: digitsPhone,
 			});
 
-			if (!valid) {
+			if (!isValid) {
 				email.classList.add('form__input_type_error');
 				phone.classList.add('form__input_type_error');
 				errorNode.textContent = 'Пожалуйста, заполните все поля.';
 				return;
 			}
-
-			errorNode.textContent = '';
 
 			this.events.emit('order:submit', {
 				email: email.value,
@@ -107,9 +85,6 @@ export class FormContacts {
 				lastValidPhone = phone.value;
 			}
 		});
-
-		email.addEventListener('input', showError);
-		phone.addEventListener('input', showError);
 
 		email.addEventListener('input', toggleButtonState);
 		phone.addEventListener('input', toggleButtonState);

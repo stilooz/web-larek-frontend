@@ -16,10 +16,26 @@ export class FormModel extends EventEmitter {
 	}
 
 	validate(data: ContactData) {
-		const valid = data.email.trim() !== '' && data.phone.trim() !== '';
-		if (!valid) {
-			this.emit('form:error', { message: 'Введите Email и номер телефона' });
+		const errors: string[] = [];
+
+		const emailValid = data.email.trim() !== '';
+		const phoneDigits = data.phone.replace(/[^\d]/g, '');
+		const phoneValid = phoneDigits.length === 11;
+
+		if (!emailValid) {
+			errors.push('Email не заполнен');
 		}
+
+		if (!phoneValid) {
+			errors.push('Номер телефона должен содержать 11 цифр');
+		}
+
+		const valid = errors.length === 0;
+
+		if (!valid) {
+			this.emit('form:error', { message: errors.join('. ') });
+		}
+
 		return valid;
 	}
 }
