@@ -50,7 +50,6 @@ document.body.append(basketView.render(basketModel.items));
 const basketPresenter = new BasketPresenter(basketModel, basketView, events);
 
 document.querySelector('.header__basket')?.addEventListener('click', () => {
-	console.log('basket icon clicked');
 	events.emit('basket:open');
 });
 

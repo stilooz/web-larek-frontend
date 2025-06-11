@@ -57,7 +57,6 @@ export class CardPreview {
 
 		if (this.button) {
 			this.button.addEventListener('click', () => {
-				console.log('CardPreview emitting basket:add for id:', product.id);
 				document.dispatchEvent(
 					new CustomEvent('basket:add', {
 						detail: { id: product.id },

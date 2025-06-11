@@ -10,7 +10,7 @@ export class Success {
 		const fragment = template?.content.cloneNode(true);
 
 		if (!(fragment instanceof DocumentFragment)) {
-			throw new Error('Шаблон #success не найден в DOM');
+			throw new Error('Шаблон success не найден в DOM');
 		}
 
 		const root =
@@ -18,7 +18,7 @@ export class Success {
 			(fragment.firstElementChild as HTMLElement);
 
 		if (!root) {
-			throw new Error('В шаблоне #success отсутствует .order-success');
+			throw new Error('В шаблоне success отсутствует .order-success');
 		}
 
 		const sumNode = root.querySelector(
