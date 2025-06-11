@@ -4,10 +4,6 @@ import type { DeliveryData } from '../../types';
 
 export class FormOrder {
 	constructor(private events: EventEmitter, private container: HTMLElement) {
-		this.events.on('order:submit', () => {
-			this.container.classList.add('modal_active');
-		});
-
 		this.events.on('order:open', () => {
 			const template = document.querySelector<HTMLTemplateElement>('#order');
 			const clone = template?.content.cloneNode(true);
@@ -93,7 +89,7 @@ export class FormOrder {
 				if (!modalContent) return;
 
 				modalContent.innerHTML = '';
-				const contactsForm = new FormContacts(this.events);
+				const contactsForm = new FormContacts(this.events, this.container);
 				modalContent.append(contactsForm.render());
 			});
 		});

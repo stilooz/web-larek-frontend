@@ -3,8 +3,15 @@ import type { ContactData } from '../../types';
 import { FormModel } from '../model/FormModel';
 export class FormContacts {
 	private container: HTMLFormElement;
+	private modalContainer: HTMLElement;
 
-	constructor(private events: EventEmitter) {}
+	constructor(private events: EventEmitter, modalContainer: HTMLElement) {
+		this.modalContainer = modalContainer;
+		this.events.on('contacts:open', () => {
+			const formElement = this.render();
+			this.events.emit('modal:open', formElement);
+		});
+	}
 
 	render(): HTMLFormElement {
 		const template = document.querySelector<HTMLTemplateElement>('#contacts');
@@ -91,7 +98,7 @@ export class FormContacts {
 
 		toggleButtonState();
 
-		this.container = form;
+		// this.container = form;
 		return form;
 	}
 }

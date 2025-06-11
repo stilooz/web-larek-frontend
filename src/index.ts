@@ -3,9 +3,9 @@ import { EventEmitter } from './components/base/events';
 import { ApiModel } from './components/model/ApiModel';
 import { Modal } from './components/view/Modal';
 import { CatalogPresenter } from './components/base/CatalogPresenter';
-import { FormOrder } from './components/view/FormOrder';
 import { Basket } from './components/view/Basket';
 import { BasketPresenter } from './components/base/BasketPresenter';
+import { OrderPresenter } from './components/base/OrderPresenter';
 import { BasketModel } from './components/model/BasketModel';
 import { Product } from './types';
 import { CDN_URL } from './utils/constants';
@@ -49,11 +49,13 @@ document.body.append(basketView.render(basketModel.items));
 
 const basketPresenter = new BasketPresenter(basketModel, basketView, events);
 
+// Инициализация логики оформления заказа
+new OrderPresenter(
+	events,
+	basketModel,
+	document.querySelector('#modal-container') as HTMLElement
+);
+
 document.querySelector('.header__basket')?.addEventListener('click', () => {
 	events.emit('basket:open');
 });
-
-const orderForm = new FormOrder(
-	events,
-	document.querySelector('.modal__content') as HTMLElement
-);
