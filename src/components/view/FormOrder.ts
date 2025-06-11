@@ -1,5 +1,6 @@
 import { EventEmitter } from '../base/events';
 import { FormContacts } from './FormContacts';
+import type { DeliveryData } from '../../types';
 
 export class FormOrder {
 	constructor(private events: EventEmitter, private container: HTMLElement) {
@@ -81,6 +82,12 @@ export class FormOrder {
 				if (errorContainer) {
 					errorContainer.textContent = '';
 				}
+
+				const deliveryData: DeliveryData = {
+					payment: selectedPayment,
+					address: addressInput.value.trim(),
+				};
+				this.events.emit('delivery:submit', deliveryData);
 
 				const modalContent = document.querySelector('.modal__content');
 				if (!modalContent) return;
