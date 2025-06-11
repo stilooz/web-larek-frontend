@@ -59,6 +59,8 @@ export class Basket {
 		this.counter.textContent = String(items.length);
 		this.counter.classList.toggle('basket__counter--visible', items.length > 0);
 
+		this.list.classList.toggle('basket__list_empty', items.length === 0);
+
 		return this.container;
 	}
 
