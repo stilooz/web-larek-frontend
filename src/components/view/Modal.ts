@@ -45,6 +45,7 @@ export class Modal {
 	close() {
 		document.body.style.overflow = '';
 		this.container.style.top = '';
+		this.content.innerHTML = '';
 		this.container.classList.remove('modal_active');
 	}
 }
