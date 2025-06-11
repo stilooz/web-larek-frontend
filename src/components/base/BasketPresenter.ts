@@ -100,7 +100,12 @@ export class BasketPresenter {
 		const newButton = this.cardButton.cloneNode(true) as HTMLButtonElement;
 		if (!isInBasket) {
 			newButton.addEventListener('click', () => {
-				this.events.emit('basket:add', { id: productId });
+				const product = this.model
+					.getItems()
+					.find((item) => item.id === productId);
+				if (product) {
+					this.events.emit('card:buy', product);
+				}
 			});
 		}
 		this.cardButton.replaceWith(newButton);
