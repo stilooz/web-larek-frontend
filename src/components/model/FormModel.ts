@@ -1,7 +1,8 @@
 import { EventEmitter } from '../base/events';
+import type { OrderInfo, ContactData } from '../../types';
 
 export class FormModel extends EventEmitter {
-	static validateContacts(data: { email: string; phone: string }) {
+	static validateContacts(data: ContactData) {
 		const errors: { email?: string; phone?: string } = {};
 		let valid = true;
 
@@ -18,7 +19,7 @@ export class FormModel extends EventEmitter {
 		return { valid, errors };
 	}
 
-	async submitOrder(orderData: Record<string, unknown>) {
+	async submitOrder(orderData: OrderInfo) {
 		try {
 			const response = await fetch('/api/orders', {
 				method: 'POST',

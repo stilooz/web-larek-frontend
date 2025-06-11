@@ -30,7 +30,7 @@ export class Card {
 		const price = card.querySelector('.card__price') as HTMLElement;
 
 		category.textContent = this.product.category;
-		const categoryMap: Record<string, string> = {
+		const categoryMap: Record<Product['category'], string> = {
 			'софт-скил': 'soft',
 			'хард-скил': 'hard',
 			другое: 'other',
