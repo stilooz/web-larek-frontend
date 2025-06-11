@@ -106,7 +106,6 @@ export class FormContacts {
 
 			const digitsOnly = phone.value.replace(/[^\d]/g, '');
 			if (digitsOnly.length > 11) {
-				// revert to the last state that contained ≤ 11 digits
 				phone.value = lastValidPhone;
 			} else {
 				lastValidPhone = phone.value;

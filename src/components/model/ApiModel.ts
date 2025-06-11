@@ -4,7 +4,6 @@ import { API_URL } from '../../utils/constants';
 
 export class ApiModel extends Api {
 	constructor() {
-		console.log('API_URL:', API_URL);
 		super(API_URL);
 	}
 
