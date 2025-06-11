@@ -42,11 +42,5 @@ export class Success {
 	private close() {
 		this.events.emit('modal:close');
 		this.events.emit('order:clear');
-		const activeModal = document.querySelector(
-			'.modal.modal_active'
-		) as HTMLElement | null;
-		if (activeModal) {
-			activeModal.classList.remove('modal_active');
-		}
 	}
 }

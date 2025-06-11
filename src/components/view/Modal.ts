@@ -12,6 +12,7 @@ export class Modal {
 		events.on('modal:open', (content: HTMLElement) => {
 			this.open(content);
 		});
+		events.on('modal:close', this.close.bind(this));
 		this.closeButton = this.container.querySelector(
 			'.modal__close'
 		) as HTMLElement;
