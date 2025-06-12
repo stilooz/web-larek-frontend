@@ -56,5 +56,26 @@ export class OrderPresenter {
 			const successComponent = new Success(this.events, total).render();
 			this.events.emit('modal:open', successComponent);
 		});
+
+		this.events.on(
+			'order:submit',
+			(payload?: { email?: string; phone?: string }) => {
+				this.events.emit('modal:close');
+
+				if (!payload || !payload.email) {
+					this.events.emit('order:open');
+					return;
+				}
+
+				const total = this.model
+					.getItems()
+					.reduce((sum, item) => sum + (item.price ?? 0), 0);
+
+				this.model.clear();
+
+				const successModal = new Success(this.events, total).render();
+				this.events.emit('modal:open', successModal);
+			}
+		);
 	}
 }
