@@ -6,3 +6,8 @@ dist
 .vscode
 *.log
 .DS_Store
+
+# Cursor IDE
+.cursor/
+.cursor-config.json
+.cursor-history/
