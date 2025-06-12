@@ -86,10 +86,6 @@ export class Basket {
 		return item;
 	}
 
-	getItems(): Product[] {
-		return [...this.items];
-	}
-
 	open() {
 		this.events.emit('modal:open', this.element);
 	}
