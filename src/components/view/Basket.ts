@@ -3,7 +3,6 @@ import type { Product } from '../../types';
 
 export class Basket {
 	public element: HTMLElement;
-	public container: HTMLElement;
 	private list: HTMLUListElement;
 	private price: HTMLElement;
 	private button: HTMLButtonElement;
@@ -17,13 +16,12 @@ export class Basket {
 		cardBasketTemplate: HTMLTemplateElement,
 		basketCounter: HTMLElement
 	) {
-		const container = basketTemplate.content.firstElementChild!.cloneNode(true) as HTMLElement;
+		const element = basketTemplate.content.firstElementChild!.cloneNode(true) as HTMLElement;
 
-		this.element = container;
-		this.container = container;
-		this.list = container.querySelector('.basket__list')!;
-		this.price = container.querySelector('.basket__price')!;
-		this.button = container.querySelector('.basket__button')!;
+		this.element = element;
+		this.list = element.querySelector('.basket__list')!;
+		this.price = element.querySelector('.basket__price')!;
+		this.button = element.querySelector('.basket__button')!;
 		this.template = cardBasketTemplate;
 		this.counter = basketCounter;
 
@@ -55,7 +53,7 @@ export class Basket {
 
 		this.list.classList.toggle('basket__list_empty', items.length === 0);
 
-		return this.container;
+		return this.element;
 	}
 
 	private renderItem(product: Product, index: number): HTMLElement {
@@ -93,7 +91,7 @@ export class Basket {
 	}
 
 	open() {
-		this.events.emit('modal:open', this.container);
+		this.events.emit('modal:open', this.element);
 	}
 
 	close() {
