@@ -85,12 +85,4 @@ export class Basket {
 
 		return item;
 	}
-
-	open() {
-		this.events.emit('modal:open', this.element);
-	}
-
-	close() {
-		this.events.emit('modal:close');
-	}
 }

@@ -46,7 +46,7 @@ export class BasketPresenter {
 		});
 
 		this.events.on('basket:open', () => {
-			this.view.open();
+			this.events.emit('modal:open', this.view.render(this.model.getItems()));
 		});
 
 		this.model.events.on('basket:changed', (items: Product[]) => {
