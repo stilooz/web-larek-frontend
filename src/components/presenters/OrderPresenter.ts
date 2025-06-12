@@ -10,6 +10,7 @@ import { FormModel } from '../model/FormModel';
 export class OrderPresenter {
 	private api: ApiModel;
 	private deliveryData: DeliveryData | null = null;
+	private successView: Success;
 
 	constructor(
 		private events: EventEmitter,
@@ -19,6 +20,7 @@ export class OrderPresenter {
 		this.api = new ApiModel();
 		new FormOrder(this.events, this.modalContainer);
 		new FormContacts(this.events, this.modalContainer);
+		this.successView = new Success(this.events, 0);
 		this.subscribeEvents();
 	}
 
@@ -54,8 +56,8 @@ export class OrderPresenter {
 			const total = this.model.getTotal();
 			this.model.clear();
 
-			const successComponent = new Success(this.events, total).render();
-			this.events.emit('modal:open', successComponent);
+			this.successView.setTotal(total);
+			this.events.emit('modal:open', this.successView.render());
 		});
 
 		this.events.on(
@@ -73,8 +75,8 @@ export class OrderPresenter {
 
 				this.model.clear();
 
-				const successModal = new Success(this.events, total).render();
-				this.events.emit('modal:open', successModal);
+				this.successView.setTotal(total);
+				this.events.emit('modal:open', this.successView.render());
 			}
 		);
 	}

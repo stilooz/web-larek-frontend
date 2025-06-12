@@ -43,4 +43,14 @@ export class Success {
 		this.events.emit('modal:close');
 		this.events.emit('order:clear');
 	}
+
+	public setTotal(total: number) {
+		this.total = total;
+		if (this.root) {
+			const sumNode = this.root.querySelector('.order-success__description') as HTMLElement | null;
+			if (sumNode) {
+				sumNode.textContent = `Списано ${this.total} синапсов`;
+			}
+		}
+	}
 }
