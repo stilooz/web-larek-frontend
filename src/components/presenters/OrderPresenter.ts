@@ -32,6 +32,7 @@ export class OrderPresenter {
 			this.events.emit('modal:close');
 
 			const items = this.model.getItems();
+			const total = this.model.getTotal();
 			const deliveryData = this.model.getDeliveryData();
 			if (!deliveryData) {
 				this.events.emit('order:error', {
@@ -40,20 +41,26 @@ export class OrderPresenter {
 				return;
 			}
 
+			const orderPayload = {
+				items: items.map((item) => item.id),
+				address: deliveryData.address,
+				payment: deliveryData.payment,
+				email: contactData.email,
+				phone: contactData.phone,
+				total,
+			} as const;
+
 			try {
-				await this.api.postOrderLot({
-					items,
-					delivery: deliveryData,
-					contacts: contactData,
-				});
+				await this.api.postOrderLot(orderPayload);
+				await new Promise(res => setTimeout(res, 2000)); // искусственная задержка 2 сек
 			} catch (error) {
+				console.error('order:error ->', error);
 				this.events.emit('order:error', {
 					message: 'Не удалось отправить заказ',
 				});
 				return;
 			}
 
-			const total = this.model.getTotal();
 			this.model.clear();
 			this.model.clearDeliveryData();
 
@@ -63,7 +70,7 @@ export class OrderPresenter {
 
 		this.events.on(
 			'order:submit',
-			(payload?: { email?: string; phone?: string }) => {
+			async (payload?: { email?: string; phone?: string }) => {
 				this.events.emit('modal:close');
 
 				if (!payload || !validateContactData(payload as ContactData)) {
@@ -71,7 +78,35 @@ export class OrderPresenter {
 					return;
 				}
 
+				const items = this.model.getItems();
 				const total = this.model.getTotal();
+				const deliveryData = this.model.getDeliveryData();
+
+				if (!deliveryData) {
+					this.events.emit('order:error', {
+						message: 'Данные доставки не найдены',
+					});
+					return;
+				}
+
+				const orderPayload = {
+					items: items.map((item) => item.id),
+					address: deliveryData.address,
+					payment: deliveryData.payment,
+					email: payload.email,
+					phone: payload.phone,
+					total,
+				} as const;
+
+				try {
+					await this.api.postOrderLot(orderPayload);
+				} catch (error) {
+					console.error('Ошибка  при запросе /order ->', error);
+					this.events.emit('order:error', {
+						message: 'Не удалось отправить заказ',
+					});
+					return;
+				}
 
 				this.model.clear();
 				this.model.clearDeliveryData();
