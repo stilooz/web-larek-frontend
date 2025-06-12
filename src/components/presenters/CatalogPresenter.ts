@@ -1,16 +1,19 @@
 import { Product } from '../../types';
 import { EventEmitter } from '../base/events';
 import { ApiModel } from '../model/ApiModel';
-import { Card } from '../view/Card';
+import { StoreView } from '../view/StoreView';
 
 export class CatalogPresenter {
 	public items: Product[] = [];
+	private view: StoreView;
 
 	constructor(
 		private apiModel: ApiModel,
-		private catalogRoot: HTMLElement,
+		catalogRoot: HTMLElement,
 		private events: EventEmitter
-	) {}
+	) {
+		this.view = new StoreView(catalogRoot, this.events);
+	}
 
 	async init() {
 		this.items = await this.apiModel.getListProductCard();
@@ -18,10 +21,7 @@ export class CatalogPresenter {
 	}
 
 	private renderCatalog(products: Product[]) {
-		this.catalogRoot.innerHTML = '';
-		products.forEach((product) => {
-			const card = new Card(product, this.events);
-			this.catalogRoot.append(card.element);
-		});
+		this.view.clearCatalog();
+		this.view.renderCatalog(products);
 	}
 }
