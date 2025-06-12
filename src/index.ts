@@ -45,7 +45,11 @@ document.addEventListener('basket:add', (event: Event) => {
 
 catalog.init();
 
-const basketView = new Basket(events);
+const basketTemplate = document.getElementById('basket') as HTMLTemplateElement;
+const cardBasketTemplate = document.getElementById('card-basket') as HTMLTemplateElement;
+const basketCounter = document.querySelector('.header__basket-counter') as HTMLElement;
+
+const basketView = new Basket(events, basketTemplate, cardBasketTemplate, basketCounter);
 
 const basketPresenter = new BasketPresenter(basketModel, basketView, events);
 

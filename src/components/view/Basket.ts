@@ -11,27 +11,21 @@ export class Basket {
 	private counter: HTMLElement;
 	private items: Product[] = [];
 
-	constructor(private events: EventEmitter) {
-		const basketTemplate = document.getElementById(
-			'basket'
-		) as HTMLTemplateElement;
-		const container = basketTemplate.content.firstElementChild!.cloneNode(
-			true
-		) as HTMLElement;
+	constructor(
+		private events: EventEmitter,
+		basketTemplate: HTMLTemplateElement,
+		cardBasketTemplate: HTMLTemplateElement,
+		basketCounter: HTMLElement
+	) {
+		const container = basketTemplate.content.firstElementChild!.cloneNode(true) as HTMLElement;
 
 		this.element = container;
 		this.container = container;
 		this.list = container.querySelector('.basket__list')!;
 		this.price = container.querySelector('.basket__price')!;
 		this.button = container.querySelector('.basket__button')!;
-		const basketTemplateCheck = document.getElementById('card-basket');
-		if (!basketTemplateCheck) {
-			console.error('шаблон не найден');
-		}
-		this.template = document.getElementById(
-			'card-basket'
-		) as HTMLTemplateElement;
-		this.counter = document.querySelector('.header__basket-counter')!;
+		this.template = cardBasketTemplate;
+		this.counter = basketCounter;
 
 		this.button.addEventListener('click', () => {
 			this.events.emit('order:submit');
@@ -65,18 +59,12 @@ export class Basket {
 	}
 
 	private renderItem(product: Product, index: number): HTMLElement {
-		const item = this.template.content.firstElementChild!.cloneNode(
-			true
-		) as HTMLElement;
+		const item = this.template.content.firstElementChild!.cloneNode(true) as HTMLElement;
 
-		const indexElement = item.querySelector(
-			'.basket__item-index'
-		) as HTMLElement;
+		const indexElement = item.querySelector('.basket__item-index') as HTMLElement;
 		const titleElement = item.querySelector('.card__title') as HTMLElement;
 		const priceElement = item.querySelector('.card__price') as HTMLElement;
-		const deleteButton = item.querySelector(
-			'.basket__item-delete'
-		) as HTMLElement;
+		const deleteButton = item.querySelector('.basket__item-delete') as HTMLElement;
 
 		item.classList.add('basket__item', 'card', 'card_compact');
 
