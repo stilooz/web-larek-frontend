@@ -1,6 +1,7 @@
 import { EventEmitter } from '../base/events';
 import type { ContactData } from '../../types';
-import { FormModel } from '../model/FormModel';
+import { validateContactData } from '../model/FormModel';
+
 export class FormContacts {
 	private container: HTMLFormElement;
 	private modalContainer: HTMLElement;
@@ -58,8 +59,7 @@ export class FormContacts {
 
 			const digitsPhone = phone.value.replace(/[^\d]/g, '');
 
-			const formModel = new FormModel(this.events);
-			const isValid = formModel.validate({
+			const isValid = validateContactData({
 				email: email.value.trim(),
 				phone: digitsPhone,
 			});

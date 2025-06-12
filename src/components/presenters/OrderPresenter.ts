@@ -5,7 +5,7 @@ import { FormOrder } from '../view/FormOrder';
 import { FormContacts } from '../view/FormContacts';
 import { Success } from '../view/Success';
 import type { DeliveryData, ContactData } from '../../types';
-import { FormModel } from '../model/FormModel';
+import { validateContactData } from '../model/FormModel';
 
 export class OrderPresenter {
 	private api: ApiModel;
@@ -66,8 +66,7 @@ export class OrderPresenter {
 			(payload?: { email?: string; phone?: string }) => {
 				this.events.emit('modal:close');
 
-				const formModel = new FormModel();
-				if (!payload || !formModel.validate(payload as ContactData)) {
+				if (!payload || !validateContactData(payload as ContactData)) {
 					this.events.emit('order:open');
 					return;
 				}
