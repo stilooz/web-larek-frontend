@@ -1,5 +1,5 @@
 import { Product } from '../../types';
-import { EventEmitter } from './events';
+import { EventEmitter } from '../base/events';
 import { ApiModel } from '../model/ApiModel';
 import { Card } from '../view/Card';
 

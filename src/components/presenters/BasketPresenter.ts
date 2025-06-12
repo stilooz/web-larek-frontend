@@ -1,5 +1,5 @@
 import { Product } from '../../types';
-import { EventEmitter } from './events';
+import { EventEmitter } from '../base/events';
 import { BasketModel } from '../model/BasketModel';
 import { Basket } from '../view/Basket';
 import { Success } from '../view/Success';
@@ -12,12 +12,6 @@ export class BasketPresenter {
 	private modalContainer = document.querySelector('.modal') as HTMLElement;
 	private cardContainer = this.modalContainer?.querySelector(
 		'.card'
-	) as HTMLElement;
-	private cardButton = this.cardContainer?.querySelector(
-		'.card__button'
-	) as HTMLButtonElement;
-	private cardTitle = this.cardContainer?.querySelector(
-		'.card__title'
 	) as HTMLElement;
 
 	constructor(model: BasketModel, view: Basket, events: EventEmitter) {
@@ -88,16 +82,21 @@ export class BasketPresenter {
 			!this.modalContainer.classList.contains('modal_active')
 		)
 			return;
-		if (!this.cardContainer || !this.cardButton || !this.cardTitle) return;
 
-		const productId = this.cardTitle.getAttribute('data-id');
+		const cardContainer = this.modalContainer?.querySelector('.card') as HTMLElement | null;
+		const cardButton = cardContainer?.querySelector('.card__button') as HTMLButtonElement | null;
+		const cardTitle = cardContainer?.querySelector('.card__title') as HTMLElement | null;
+
+		if (!cardContainer || !cardButton || !cardTitle) return;
+
+		const productId = cardTitle.getAttribute('data-id');
 		if (!productId) return;
 
 		const isInBasket = items.some((item) => item.id === productId);
-		this.cardButton.textContent = 'Купить';
-		this.cardButton.disabled = isInBasket;
+		cardButton.textContent = 'Купить';
+		cardButton.disabled = isInBasket;
 
-		const newButton = this.cardButton.cloneNode(true) as HTMLButtonElement;
+		const newButton = cardButton.cloneNode(true) as HTMLButtonElement;
 		if (!isInBasket) {
 			newButton.addEventListener('click', () => {
 				const product = this.model
@@ -108,6 +107,6 @@ export class BasketPresenter {
 				}
 			});
 		}
-		this.cardButton.replaceWith(newButton);
+		cardButton.replaceWith(newButton);
 	}
 }
