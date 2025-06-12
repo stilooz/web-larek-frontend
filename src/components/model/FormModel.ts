@@ -1,19 +1,18 @@
 import type { ContactData } from '../../types';
 
-export function validateContactData(data: ContactData): boolean {
+export function validateContactData(data: ContactData): string[] {
 	const errors: string[] = [];
 
 	const emailValid = data.email.trim() !== '';
-	const phoneDigits = data.phone.replace(/[^\d]/g, '');
-	const phoneValid = phoneDigits.length === 11;
+	const phoneValid = data.phone.trim() !== '';
 
 	if (!emailValid) {
 		errors.push('Email не заполнен');
 	}
 
 	if (!phoneValid) {
-		errors.push('Номер телефона должен содержать 11 цифр');
+		errors.push('Введите номер телефона');
 	}
 
-	return errors.length === 0;
+	return errors;
 }

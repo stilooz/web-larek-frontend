@@ -20,25 +20,35 @@ export class FormOrder {
 			const nextButton = formElement.querySelector<HTMLButtonElement>(
 				'button[type="submit"]'
 			);
+			const errorContainer = formElement.querySelector('.form__errors');
 
 			let selectedPayment: 'card' | 'cash' | null = null;
 
-			const errorContainer = formElement.querySelector('.form__errors');
-
-			const updateButtonState = () => {
-				const isAddressFilled = !!addressInput?.value.trim();
-				const isPaymentSelected = !!selectedPayment;
-				if (nextButton) {
-					nextButton.disabled = !(isAddressFilled && isPaymentSelected);
+			const validateAndShowErrors = () => {
+				const errors: string[] = [];
+				
+				if (!selectedPayment) {
+					errors.push('Выберите способ оплаты');
 				}
-			};
+				
+				if (!addressInput?.value.trim()) {
+					errors.push('Введите адрес доставки');
+				}
 
-			const showError = () => {
-				if (!selectedPayment || !addressInput?.value.trim()) {
-					errorContainer.textContent =
-						'Выберите способ оплаты и введите адрес доставки.';
+				if (errors.length > 0) {
+					if (errorContainer) {
+						errorContainer.textContent = errors.join('. ');
+					}
+					if (nextButton) {
+						nextButton.disabled = true;
+					}
 				} else {
-					errorContainer.textContent = '';
+					if (errorContainer) {
+						errorContainer.textContent = '';
+					}
+					if (nextButton) {
+						nextButton.disabled = false;
+					}
 				}
 			};
 
@@ -46,21 +56,18 @@ export class FormOrder {
 				selectedPayment = 'card';
 				cardBtn.classList.add('button_alt-active');
 				cashBtn?.classList.remove('button_alt-active');
-				updateButtonState();
-				showError();
+				validateAndShowErrors();
 			});
 
 			cashBtn?.addEventListener('click', () => {
 				selectedPayment = 'cash';
 				cashBtn.classList.add('button_alt-active');
 				cardBtn?.classList.remove('button_alt-active');
-				updateButtonState();
-				showError();
+				validateAndShowErrors();
 			});
 
 			addressInput?.addEventListener('input', () => {
-				updateButtonState();
-				showError();
+				validateAndShowErrors();
 			});
 
 			this.events.emit('modal:open', formElement);
@@ -68,13 +75,23 @@ export class FormOrder {
 			formElement.addEventListener('submit', (e) => {
 				e.preventDefault();
 
-				if (!selectedPayment || !addressInput?.value.trim()) {
+				const errors: string[] = [];
+				
+				if (!selectedPayment) {
+					errors.push('Выберите способ оплаты');
+				}
+				
+				if (!addressInput?.value.trim()) {
+					errors.push('Введите адрес доставки');
+				}
+
+				if (errors.length > 0) {
 					if (errorContainer) {
-						errorContainer.textContent =
-							'Выберите способ оплаты и введите адрес доставки.';
+						errorContainer.textContent = errors.join('. ');
 					}
 					return;
 				}
+
 				if (errorContainer) {
 					errorContainer.textContent = '';
 				}
@@ -92,6 +109,8 @@ export class FormOrder {
 				const contactsForm = new FormContacts(this.events, this.container);
 				modalContent.append(contactsForm.render());
 			});
+
+			validateAndShowErrors();
 		});
 	}
 }

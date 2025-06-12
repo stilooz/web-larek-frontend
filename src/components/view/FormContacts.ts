@@ -28,46 +28,47 @@ export class FormContacts {
 
 		const email = form.elements.namedItem('email') as HTMLInputElement;
 		const phone = form.elements.namedItem('phone') as HTMLInputElement;
+		const errorContainer = form.querySelector('.form__errors') as HTMLElement;
 
 		const submitButton = form.querySelector<HTMLButtonElement>(
 			'button[type="submit"], .order__button'
 		);
 
-		const toggleButtonState = () => {
-			const isFilled =
-				email.value.trim() !== '' &&
-				phone.value.replace(/[^\d]/g, '').length === 11;
+		const validateAndShowErrors = () => {
+			const digitsPhone = phone.value.replace(/[^\d]/g, '');
+			const errors = validateContactData({
+				email: email.value.trim(),
+				phone: digitsPhone,
+			});
+
+			if (errors.length > 0) {
+				email.classList.add('form__input_type_error');
+				phone.classList.add('form__input_type_error');
+				errorContainer.textContent = errors.join('. ');
+			} else {
+				email.classList.remove('form__input_type_error');
+				phone.classList.remove('form__input_type_error');
+				errorContainer.textContent = '';
+			}
 
 			if (submitButton) {
-				submitButton.disabled = !isFilled;
+				submitButton.disabled = errors.length > 0;
 			}
 		};
 
 		form.addEventListener('submit', (event) => {
 			event.preventDefault();
 
-			let errorNode = form.querySelector('.form__error') as HTMLElement;
-
-			if (!errorNode) {
-				const button = form.querySelector('.order__button');
-				errorNode = document.createElement('span');
-				errorNode.classList.add('form__error');
-				button?.insertAdjacentElement('afterend', errorNode);
-			}
-
-			errorNode.textContent = '';
-
 			const digitsPhone = phone.value.replace(/[^\d]/g, '');
-
-			const isValid = validateContactData({
+			const errors = validateContactData({
 				email: email.value.trim(),
 				phone: digitsPhone,
 			});
 
-			if (!isValid) {
+			if (errors.length > 0) {
 				email.classList.add('form__input_type_error');
 				phone.classList.add('form__input_type_error');
-				errorNode.textContent = 'Пожалуйста, заполните все поля.';
+				errorContainer.textContent = errors.join('. ');
 				return;
 			}
 
@@ -79,24 +80,15 @@ export class FormContacts {
 
 		email.addEventListener('input', () => {
 			email.value = email.value.replace(/[А-Яа-яЁё]/g, '');
+			validateAndShowErrors();
 		});
 
-		let lastValidPhone = '';
 		phone.addEventListener('input', () => {
 			phone.value = phone.value.replace(/[^\d()+\-\s]/g, '');
-
-			const digitsOnly = phone.value.replace(/[^\d]/g, '');
-			if (digitsOnly.length > 11) {
-				phone.value = lastValidPhone;
-			} else {
-				lastValidPhone = phone.value;
-			}
+			validateAndShowErrors();
 		});
 
-		email.addEventListener('input', toggleButtonState);
-		phone.addEventListener('input', toggleButtonState);
-
-		toggleButtonState();
+		validateAndShowErrors();
 
 		return form;
 	}
