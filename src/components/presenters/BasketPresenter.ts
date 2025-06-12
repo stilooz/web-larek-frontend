@@ -51,25 +51,23 @@ export class BasketPresenter {
 
 		this.model.events.on('basket:changed', (items: Product[]) => {
 			this.view.render(items);
-			this.updateCardPreviewButton(items);
+			if (typeof window !== 'undefined' && (window as any).currentCardPreview) {
+				const productId = (window as any).currentCardPreview.productId;
+				if (productId) {
+					this.updateCardPreviewButton(items, productId);
+				}
+			}
 		});
 	}
 
-	private updateCardPreviewButton(items: Product[]) {
-		if (
-			!this.modalContainer ||
-			!this.modalContainer.classList.contains('modal_active')
-		)
-			return;
+	private updateCardPreviewButton(items: Product[], productId: string) {
+		if (!productId) return;
 
 		const cardContainer = this.modalContainer?.querySelector('.card') as HTMLElement | null;
 		const cardButton = cardContainer?.querySelector('.card__button') as HTMLButtonElement | null;
 		const cardTitle = cardContainer?.querySelector('.card__title') as HTMLElement | null;
 
 		if (!cardContainer || !cardButton || !cardTitle) return;
-
-		const productId = cardTitle.getAttribute('data-id');
-		if (!productId) return;
 
 		const isInBasket = items.some((item) => item.id === productId);
 		cardButton.textContent = 'Купить';

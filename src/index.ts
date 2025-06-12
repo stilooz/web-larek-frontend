@@ -24,6 +24,7 @@ let currentCardPreview: CardPreview | null = null;
 
 events.on('card:select', (product: Product) => {
 	currentCardPreview = new CardPreview(product);
+	(window as any).currentCardPreview = currentCardPreview;
 	currentCardPreview.updateButton(basketModel.items);
 	modal.open(currentCardPreview.element);
 });
