@@ -9,7 +9,6 @@ import { FormModel } from '../model/FormModel';
 
 export class OrderPresenter {
 	private api: ApiModel;
-	private deliveryData: DeliveryData | null = null;
 	private successView: Success;
 
 	constructor(
@@ -26,14 +25,15 @@ export class OrderPresenter {
 
 	private subscribeEvents(): void {
 		this.events.on('delivery:submit', (deliveryData: DeliveryData) => {
-			this.deliveryData = deliveryData;
+			this.model.setDeliveryData(deliveryData);
 		});
 
 		this.events.on('contacts:submit', async (contactData: ContactData) => {
 			this.events.emit('modal:close');
 
 			const items = this.model.getItems();
-			if (!this.deliveryData) {
+			const deliveryData = this.model.getDeliveryData();
+			if (!deliveryData) {
 				this.events.emit('order:error', {
 					message: 'Данные доставки не найдены',
 				});
@@ -43,7 +43,7 @@ export class OrderPresenter {
 			try {
 				await this.api.postOrderLot({
 					items,
-					delivery: this.deliveryData,
+					delivery: deliveryData,
 					contacts: contactData,
 				});
 			} catch (error) {
@@ -55,6 +55,7 @@ export class OrderPresenter {
 
 			const total = this.model.getTotal();
 			this.model.clear();
+			this.model.clearDeliveryData();
 
 			this.successView.setTotal(total);
 			this.events.emit('modal:open', this.successView.render());
@@ -74,6 +75,7 @@ export class OrderPresenter {
 				const total = this.model.getTotal();
 
 				this.model.clear();
+				this.model.clearDeliveryData();
 
 				this.successView.setTotal(total);
 				this.events.emit('modal:open', this.successView.render());

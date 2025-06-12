@@ -1,8 +1,10 @@
 import { Product } from '../../types';
 import { EventEmitter } from '../base/events';
+import type { DeliveryData } from '../../types';
 
 export class BasketModel {
 	public items: Product[] = [];
+	private deliveryData: DeliveryData | null = null;
 
 	constructor(public events: EventEmitter) {}
 
@@ -30,5 +32,17 @@ export class BasketModel {
 
 	getTotal(): number {
 		return this.items.reduce((sum, item) => sum + (item.price ?? 0), 0);
+	}
+
+	setDeliveryData(data: DeliveryData) {
+		this.deliveryData = data;
+	}
+
+	getDeliveryData(): DeliveryData | null {
+		return this.deliveryData;
+	}
+
+	clearDeliveryData() {
+		this.deliveryData = null;
 	}
 }
