@@ -41,4 +41,12 @@ export class StoreView {
     }
     cardButton.replaceWith(newButton);
   }
+
+  set lock(isLock: boolean) {
+    if (isLock) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }
 }

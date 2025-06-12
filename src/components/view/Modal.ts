@@ -17,12 +17,12 @@ export class Modal {
 			'.modal__close'
 		) as HTMLElement;
 		this.closeButton.addEventListener('click', () => {
-			this.close();
+			events.emit('modal:close');
 		});
 		this.container.addEventListener('click', (event) => {
 			const target = event.target as HTMLElement;
 			if (target === this.container) {
-				this.close();
+				events.emit('modal:close');
 			}
 		});
 	}
@@ -37,14 +37,12 @@ export class Modal {
 
 	open(content: HTMLElement) {
 		this.container.style.top = `${window.scrollY}px`;
-		document.body.style.overflow = 'hidden';
 		this.content.innerHTML = '';
 		this.content.appendChild(content);
-		this.container.classList.add('modal_active');
+		this.container.classList.add('modal_active'); 
 	}
 
 	close() {
-		document.body.style.overflow = '';
 		this.container.style.top = '';
 		this.content.innerHTML = '';
 		this.container.classList.remove('modal_active');

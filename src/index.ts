@@ -10,12 +10,14 @@ import { BasketModel } from './components/model/BasketModel';
 import { Product } from './types';
 import { CDN_URL } from './utils/constants';
 import { CardPreview } from './components/view/CardPreview';
+import { StoreView } from './components/view/StoreView';
 
 const events = new EventEmitter();
 const modal = new Modal('#modal-container', events);
 const api = new ApiModel();
 
 const galleryContainer = document.querySelector('.gallery') as HTMLElement;
+const storeView = new StoreView(galleryContainer, events);
 
 const catalog = new CatalogPresenter(api, galleryContainer, events);
 
@@ -26,7 +28,7 @@ events.on('card:select', (product: Product) => {
 	currentCardPreview = new CardPreview(product);
 	(window as any).currentCardPreview = currentCardPreview;
 	currentCardPreview.updateButton(basketModel.items);
-	modal.open(currentCardPreview.element);
+	events.emit('modal:open', currentCardPreview.element);
 });
 
 events.on('basket:changed', () => {
@@ -61,4 +63,12 @@ new OrderPresenter(
 
 document.querySelector('.header__basket')?.addEventListener('click', () => {
 	events.emit('basket:open');
+});
+
+events.on('modal:open', () => {
+	storeView.lock = true;
+});
+
+events.on('modal:close', () => {
+	storeView.lock = false;
 });
