@@ -27,6 +27,11 @@ export class BaseCard {
 		const category = card.querySelector('.card__category') as HTMLElement;
 		if (category) {
 			category.textContent = product.category;
+			category.className = category.className
+				.split(' ')
+				.filter((cls) => !cls.startsWith('card__category_'))
+				.join(' ')
+				.trim();
 			const categoryMap: Record<Product['category'], string> = {
 				'софт-скил': 'soft',
 				'хард-скил': 'hard',
