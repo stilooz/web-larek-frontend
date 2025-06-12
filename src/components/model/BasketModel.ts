@@ -27,4 +27,8 @@ export class BasketModel {
 		this.items = [];
 		this.events.emit('basket:changed', []);
 	}
+
+	getTotal(): number {
+		return this.items.reduce((sum, item) => sum + (item.price ?? 0), 0);
+	}
 }

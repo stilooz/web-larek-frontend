@@ -51,7 +51,7 @@ export class OrderPresenter {
 				return;
 			}
 
-			const total = items.reduce((sum, item) => sum + (item.price ?? 0), 0);
+			const total = this.model.getTotal();
 			this.model.clear();
 
 			const successComponent = new Success(this.events, total).render();
@@ -69,9 +69,7 @@ export class OrderPresenter {
 					return;
 				}
 
-				const total = this.model
-					.getItems()
-					.reduce((sum, item) => sum + (item.price ?? 0), 0);
+				const total = this.model.getTotal();
 
 				this.model.clear();
 
